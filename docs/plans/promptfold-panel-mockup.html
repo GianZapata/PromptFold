@@ -99,6 +99,7 @@
     body[data-shot="closed"] [data-shot="closed"],
     body[data-shot="branch"] [data-shot="branch"],
     body[data-shot="pending"] [data-shot="pending"],
+    body[data-shot="snippets"] [data-shot="snippets"],
     body[data-shot="empty"] [data-shot="empty"] { display: block; }
 
     body {
@@ -851,6 +852,72 @@
               <button type="button" class="regex-toggle" aria-pressed="true" aria-label="Regex">Regex</button>
             </div>
             <p class="error" id="contains-invalid-error">This pattern is not a valid regular expression.</p>
+          </div>
+        </details>
+      </div>
+    </details>
+    <details>
+      <summary class="view-header">
+        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+        Files
+      </summary>
+    </details>
+  </article>
+
+  <p class="note" data-shot="snippets">Snippets and log</p>
+  <article class="sidebar" id="snippets" data-shot="snippets" aria-label="Promptfold">
+    <h2 class="sidebar-title">Promptfold</h2>
+    <details open>
+      <summary class="view-header">
+        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+        Prompt
+      </summary>
+      <div class="webview">
+        <details class="fold" open>
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+            <span>Snippets</span>
+            <span class="when-closed">· 2</span>
+          </summary>
+          <div class="fold-body">
+            <div class="repo">
+              <input type="checkbox" checked aria-label="Include storage/logs/laravel.log lines 120 to 186">
+              <span class="path" title="storage/logs/laravel.log:120-186">storage/logs/laravel.log:120-186</span>
+              <span class="count">~1.2k</span>
+            </div>
+            <div class="repo">
+              <input type="checkbox" disabled aria-label="app/Services/Stamp.php lines 40 to 52, file changed">
+              <span class="path" title="app/Services/Stamp.php:40-52">app/Services/Stamp.php:40-52</span>
+              <span class="status-word">File changed</span>
+            </div>
+          </div>
+        </details>
+        <details class="fold" open>
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
+            <span>Log</span>
+            <span class="when-closed">· 3 entries</span>
+          </summary>
+          <div class="fold-body">
+            <div class="segmented" role="radiogroup" aria-label="Level">
+              <label class="segment"><input type="radio" name="log-level" value="all"><span>All</span></label>
+              <label class="segment"><input type="radio" name="log-level" value="error" checked><span>Error</span></label>
+              <label class="segment"><input type="radio" name="log-level" value="warning"><span>Warning</span></label>
+            </div>
+            <div class="repo">
+              <input type="checkbox" checked aria-label="Include 10:23:45 error, CFDI40999 stamp rejected">
+              <span class="count">10:23:45</span>
+              <span class="repo-name">ERROR</span>
+              <span class="path" title="CFDI40999 stamp rejected">CFDI40999 stamp rejected</span>
+            </div>
+            <div class="repo">
+              <input type="checkbox" aria-label="Include 10:21:02 error, connection timed out while reading the PAC response">
+              <span class="count">10:21:02</span>
+              <span class="repo-name">ERROR</span>
+              <span class="path" title="Connection timed out while reading the PAC response">Connection timed out while reading the PAC response</span>
+            </div>
+            <p class="notice">3 identifiers can be redacted.</p>
+            <button type="button" class="btn">Last error</button>
           </div>
         </details>
       </div>

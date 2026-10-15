@@ -455,8 +455,180 @@ Marcos de 300 px con el chrome del sidebar: cabecera Promptfold, vista Prompt, F
 - Marco de rama: `Branch`, filtro, y upstream / dev / main / la coincidencia larga en el mismo `radiogroup`. Aviso de más de 8 repos, detached y `No upstream` en fuente UI.
 - Marco pendiente: skeleton con `aria-busy` y sin la palabra "Loading". El relleno es `--color-widget-border` (1.36:1 en Dark Modern, 1.19:1 en Light Modern, bajo 1.5:1). El borde es `--color-placeholder` (6.16:1 y 4.28:1) para que la barra se vea. Find sin coincidencias. Un glob inválido en Pattern (`This pattern is not a valid glob.`) y el error de regex en Contains, con "Regex" pulsado.
 - Marco vacío: tres paneles cortos (Git no disponible, sin repos, sin carpeta), cada uno con su texto y su acción.
+- Marco de snippets y log: filas `archivo:líneas` con tokens, una invalidada con `File changed`, filtro `All | Error | Warning`, aviso `3 identifiers can be redacted.` y `Last error`. No muestra identificadores.
 
 El medidor del marco de trabajo usa `role="meter"`, el `aria-valuetext` de exceso y el mismo `title`. `aria-valuenow` queda en 64000, el máximo. "Include in prompt", "Include tree" y "Compact whitespace" son casillas nativas.
+
+## Snippets y logs
+
+Copiar un `laravel.log` entero no cabe en el presupuesto. Copiarlo a mano pierde la ruta y las líneas. El caso es una entrada con un código CFDI y un XML dentro: el prompt debe llevar el error, los frames de `app/` y el XML, sin blobs ni el archivo completo.
+
+1.1 no depende del panel y puede mergearse antes. 1.2 vive en el panel. El camino masivo no cambia: un archivo sensible sigue sin entrar al prompt salvo esta acción explícita, y solo después de confirmar.
+
+### 1. Copy selection as prompt
+
+Comando `promptfold.copySelectionAsPrompt`, category Promptfold, título "Copy selection as prompt" / "Copiar selección como prompt".
+
+Menú `editor/context`, `when: editorHasSelection`, group `navigation`. Atajo `ctrl+shift+c` / `cmd+shift+c` con `when: editorTextFocus && editorHasSelection`. `editorTextFocus` evita pisar `promptfold.copyOpenFiles`, que ya usa `cmd+shift+c` cuando `focusedView == 'promptfoldView'`. Antes de publicar, verificar el atajo contra los keybindings por defecto de VS Code stable y de Cursor. Si choca, se publica sin atajo y se documenta cómo asignarlo.
+
+Cada selección, multicursor incluido, sale en el formato activo. El orden es el del documento (línea de inicio, luego carácter), no el orden en que se crearon los cursores. Una sola línea usa el mismo rango cerrado: `10-10`. La ruta es relativa a la carpeta del workspace, con separadores POSIX. Un archivo fuera del workspace usa solo el nombre, sin la ruta absoluta. Un untitled usa `Untitled-1`. El texto es el del editor, incluidos los cambios sin guardar.
+
+XML, Markdown y Plain, en ese orden de ejemplo:
+
+```xml
+<file name="storage/logs/laravel.log" lines="10-42"><![CDATA[...]]></file>
+```
+
+```markdown
+### storage/logs/laravel.log (lines 10–42)
+```
+
+```text
+=== storage/logs/laravel.log:10-42 ===
+```
+
+El guion de Markdown es el en dash del requisito (`10–42`). Plain usa guion (`10-42`). `serializedFile` hoy no escribe `lines`; el atributo se agrega solo cuando hay rango. Un archivo completo no cambia su encabezado.
+
+Archivos ignorados: `.gitignore`, `.promptignore` y `promptfold.exclude` no bloquean este comando. No se reutiliza el aviso que hoy devuelve false en `exclusion.prompt.ts`. Binarios no aplican: la selección del editor ya es texto.
+
+Sensible: los patrones de `sensitive-patterns.constant.ts` (`.env`, `*.pem`, `*.key`, `id_rsa*`, `.npmrc` y el resto). Si el archivo coincide y no está en `promptfold.allowSensitive`, un modal pregunta y Cancel es el default. Cancel no copia nada, ni las otras selecciones. El mensaje no incluye el contenido:
+
+`{0} looks like a secret ({1}). Copy it into the prompt anyway?`
+
+Botones: `Copy` y `Cancel`. Si está en `allowSensitive`, no pregunta otra vez. En los dos casos el reporte cuenta el nivel. Línea nueva de Show details, mismo estilo que `api/.env — sensitive (.env)`:
+
+`Included after confirmation: .env — sensitive (.env)`
+
+Si no hubo sensible: no se escribe esa línea. El presupuesto usa el mismo aviso que `copyFiles` (`This selection is about {0} tokens, {1} over the budget of {2}. Change promptfold.tokenBudget, copy anyway, or cancel.`). `maxFiles` y `maxTotalBytes` también aplican.
+
+Archivos: `src/domain/services/selection-range.service.ts` (puro), `prompt-xml.service.ts`, `prompt-formats.service.ts`, `src/presentation/commands/selection.commands.ts`, un confirm nuevo en `src/presentation/pickers/sensitive-confirm.prompt.ts`. No se extiende el bloqueo de `exclusion.prompt.ts`.
+
+Tests: unit de los tres encabezados con los strings de arriba; multicursor en el mismo archivo produce dos `<file>`; untitled y fuera de workspace; ignorado entra; sensible cancelado no escribe el clipboard y no deja un reporte de éxito; sensible confirmado escribe la línea del reporte; `allowSensitive` no pregunta; sobre presupuesto ofrece Copy anyway.
+
+### 2. Compactación de logs
+
+Setting `promptfold.compactLogs`, boolean, default `true`. Aplica a `*.log` que entren al prompt y a selecciones de ellos, venga del comando nuevo, del árbol o de un snippet. Otro tipo de archivo no se compacta.
+
+Servicio puro `src/domain/services/log-compact.service.ts`. Reglas, en este orden:
+
+- Una corrida de más de 200 caracteres. Si solo es `[0-9a-fA-F]`, `[hex 2.1 KB]`. Si es alfabeto base64, `[base64 2.1 KB]`. El tamaño es el largo de la corrida, con el mismo formateo que `formatByteSize`. El ejemplo del requisito es `[base64 2.1 KB]`.
+- Frames consecutivos cuyo path tiene un segmento `vendor` o `node_modules`. En Windows el segmento no distingue mayúsculas. Una corrida se vuelve `… N vendor frames`. Un frame de `app/` o `src/` entre dos corridas no se traga: quedan dos marcadores. Un frame de la app nunca se compacta.
+- Dentro de la misma entrada, un bloque de 300 caracteres o más que ya apareció se vuelve `[repeated above]`. La primera copia se queda. No cruza de una entrada a la siguiente.
+
+El XML no se parsea. Las etiquetas cortas se quedan porque no son una corrida de 200. Un sello en base64 dentro del XML sí se sustituye.
+
+Fixture `test/fixtures/laravel.log`, sintético y anonimizado. No se pega un log real. Debe conservar un código `CFDI40999`, un frame bajo `app/`, y una etiqueta XML. Debe reducir una corrida base64, una corrida hex, una corrida de frames `vendor/` y un mensaje repetido en el JSON de contexto. El test afirma el texto resultante, no solo que pesa menos.
+
+Riesgos: un log de cientos de MB no se lee entero en este paso; la compactación opera sobre el texto que ya se va a copiar. CRLF se trata como fin de línea antes de buscar frames. Encoding inválido no tira el comando: el texto ya vino del editor. En Windows, `vendor` y `node_modules` se comparan sin caso.
+
+### 3. Snippets
+
+1.2. Comando `promptfold.addSelection`, título "Add selection to prompt" / "Agregar selección al prompt", mismo `editor/context` y `editorHasSelection`. Sin atajo por defecto.
+
+Cada selección agregada es una fila del panel: casilla, `archivo:líneas`, tokens. Copy, Preview y Save as incluyen las marcadas, además de los archivos y de Git si su casilla está activa. Cerrada, la sección dice `Snippets · N`.
+
+Persisten en `workspaceState` bajo `promptfold.snippets`, no dentro de `promptfold.panel`, para que un reset del panel no las borre. Al agregar se guarda el hash del texto. Al copiar, si el editor está dirty o el hash del rango ya no coincide, la fila se desmarca, muestra `File changed` y no entra. No se relee en silencio. El aviso no incluye el diff.
+
+Requests nuevos: `snippet.add`, `snippet.toggle`. El host sigue siendo la fuente de verdad.
+
+Archivos: `src/domain/services/snippet-store.service.ts`, `src/shared/panel-protocol.ts`, `src/webview/panel/`, `src/presentation/panel/`.
+
+Tests: add y toggle; una fila invalidada no sale en el prompt; el hash igual sí sale; dos selecciones del mismo archivo son dos filas.
+
+### 4. Entradas de log
+
+1.2. Sección Log del panel. Si el editor activo no es un `*.log`, el texto es `Open a log file to list its entries.` y no se lee otro archivo. Si lo es, se listan como mucho las últimas 50 entradas: hora, nivel y primera línea, con casilla. Filtro segmentado `All | Error | Warning`. `Last error` marca la última entrada ERROR, CRITICAL, ALERT o EMERGENCY y desmarca las otras filas del log. No copia sola. No toca los snippets.
+
+El encabezado es el de Laravel/Monolog:
+
+```text
+[2026-04-02 10:23:45] production.ERROR: CFDI40999 stamp rejected
+```
+
+Parser puro `src/domain/services/log-entries.service.ts`. Lectura `src/infrastructure/filesystem/log-tail.reader.ts`: `stat`, luego los últimos 1 MiB (`LOG_TAIL_BYTES = 1048576`). Si hay menos de 50 encabezados y el archivo es mayor, se lee el MiB anterior, hasta 8 MiB (`LOG_TAIL_MAX_BYTES = 8388608`). La primera entrada cortada se descarta. Nunca se lee el archivo entero. UTF-8 inválido se reemplaza y no lanza. Los saltos son `\r?\n`. Solo se lee el documento que el editor ya tiene abierto, o una ruta contenida en el workspace. Un argumento programático fuera de eso no se lee.
+
+Riesgos: un log que rota entre el tail y el copy se trata como archivo cambiado, igual que un snippet. CRLF no parte un encabezado. En Windows la ruta del descriptor usa el URI del editor, no un string armado a mano.
+
+Tests: fixture con 60 entradas donde solo las últimas 50 se listan; un archivo de más de 8 MiB no se lee completo (el reader recibe un doble que cuenta los bytes); `Last error` marca solo esa fila; un encabezado partido al inicio del tail no aparece; filtro Error esconde INFO.
+
+### 5. Redacción
+
+Settings:
+
+| Setting | Tipo | Default |
+| --- | --- | --- |
+| `promptfold.redact` | `off` \| `ask` \| `on` | `ask` |
+| `promptfold.redactSource` | boolean | `false` |
+
+`ask` y `on` aplican solo a `*.log` y a selecciones de ellos. `off` no redacta. `promptfold.redactSource` es el interruptor de "para todo": mientras es false, un `.php`, `.ts`, `.js`, `.vue` o cualquier archivo que no sea log no se toca, aunque `redact` sea `on`.
+
+En `ask`, el modal no muestra los valores encontrados:
+
+`Redact {0} RFC, {1} CURP, {2} emails and {3} phones before copying?`
+
+Botones: `Redact` (default) y `Copy as-is`. Cerrar el modal no copia. `on` redacta logs sin preguntar.
+
+Sustituciones: `[RFC]`, `[CURP]`, `[email]`, `[phone]`. Servicio puro `src/domain/services/redact.service.ts`. Corre después de la compactación, para no redactar dentro de un blob ya sustituido.
+
+Casos que el test debe fijar. Válidos: `XAXX010101000`, `XEXX010101000`, un RFC moral de 12 con mes `01` y día `01`, un CURP con la forma de 18 (4 letras, fecha, `H` o `M`), `ana@example.com`, `+52 55 1234 5678`. Falsos positivos que no deben coincidir: un RFC en minúsculas, un código con mes `34`, `ABCDEFGHIJKLMNOPQR`, `array@2`, `5512345678` pelado, y `2026-04-02 10:23:45`. El teléfono exige `+` o separadores. El RFC exige mes 01–12 y día 01–31, en mayúsculas.
+
+El aviso y el reporte cuentan por tipo. Nunca escriben el identificador. Un XML de CFDI conserva sus etiquetas; un RFC dentro del XML se sustituye solo si la redacción está activa.
+
+### package.json, nls y riesgos comunes
+
+Comandos nuevos en `package.json`, junto a los actuales, con category Promptfold:
+
+- `promptfold.copySelectionAsPrompt`
+- `promptfold.addSelection` (1.2)
+
+Menús: `editor/context` para los dos. Atajo solo para el primero, con la cláusula de arriba.
+
+Settings nuevos, con descripción en `package.nls.json` y `package.nls.es.json`:
+
+- `promptfold.compactLogs`
+- `promptfold.redact`
+- `promptfold.redactSource`
+
+Inglés de las descripciones, para no parafrasearlas en el build:
+
+`Replace long blobs, vendor stack frames, and repeated blocks when a .log file or a selection from one is copied.`
+
+`Redact RFC, CURP, emails and phone numbers in .log files. ask is the default. off never redacts. on redacts logs without asking.`
+
+`Also apply promptfold.redact to files that are not logs. Off by default.`
+
+Español, neutro:
+
+`Sustituye blobs largos, frames de vendor y bloques repetidos al copiar un archivo .log o una selección de uno.`
+
+`Redacta RFC, CURP, correos y teléfonos en archivos .log. ask es el default. off no redacta. on redacta logs sin preguntar.`
+
+`Aplica promptfold.redact también a archivos que no son logs. Apagado por default.`
+
+Los textos de diálogo van por `vscode.l10n.t` y entran a `test/l10n-bundle.test.ts`. El español del bundle es neutro. La skill de i18n de LobeHub no aplica: este repo usa `package.nls` y `l10n/bundle.l10n.es.json`.
+
+Riesgos que cruzan los cinco puntos: no leer un log de cientos de MB entero; no poner una ruta absoluta en el prompt; no mostrar un secreto en un modal; CRLF; UTF-8 inválido; mayúsculas de Windows en `vendor` y `node_modules`; un archivo que rota entre listar y copiar. El camino masivo de sensibles no se afloja.
+
+### Orden de commits
+
+1.1, independiente del panel:
+
+1. `feat: format editor selections with path and line range`
+2. `feat: copy the editor selection as a prompt`
+3. `feat: compact logs before they enter the prompt`
+
+1.2, con el panel:
+
+4. `feat: add selections to the prompt as snippets`
+5. `feat: list recent log entries from the file tail`
+6. `feat: redact identifiers in logs before copying`
+7. `docs: document snippets, logs, and the FAQ`
+
+El commit 7 agrega las dos FAQ al README: ".DS_Store and other OS files" (ya excluidos; `.promptignore` funciona sin git; issue #17) y "Does Promptfold apply the model's reply? No, by design" (copiar es el flujo; sin red ni API keys). No se escriben en este plan.
+
+### Mockup
+
+Marco `snippets` en `docs/plans/promptfold-panel-mockup.html`, aparte del marco de trabajo para no pasar los 640 px. Snippets con una fila marcada `storage/logs/laravel.log:120-186` y una invalidada `File changed`. Log con filtro `All | Error | Warning`, dos filas ERROR, el aviso `3 identifiers can be redacted.` y el botón `Last error`. Sin valores redactados, sin fila resaltada, casillas nativas.
 
 ## Fuera de alcance de este documento
 
