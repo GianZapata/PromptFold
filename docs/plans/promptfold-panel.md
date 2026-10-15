@@ -20,7 +20,7 @@ El panel es para quien copia contexto a un LLM decenas de veces al día desde la
 
 ### Git en vivo
 
-La sección Git tiene un interruptor "Include in prompt". Mientras está activo, los repos marcados, el alcance y la base definen los cambios del prompt, y se recargan solos. `Copy changes` copia solo los cambios, como `gcopy`, y no toca la selección de archivos.
+La sección Git tiene una casilla nativa "Include in prompt", como las de settings de VS Code. Mientras está activa, los repos marcados, el alcance y la base definen los cambios del prompt, y se recargan solos. `Copy changes` copia solo los cambios, como `gcopy`, y no toca la selección de archivos.
 
 Las actuales "Git changes" y "Extensions" quedan colapsadas en 1.1. "Git changes" sigue sirviendo para excluir archivo por archivo, y ahora la alimenta el estado en vivo. En 1.2 se decide si "Extensions" desaparece.
 
@@ -29,11 +29,11 @@ Los cambios de Git ya no marcan archivos en el árbol. `promptfold.diffMode` dec
 Visibilidad:
 
 - Con "Include in prompt" activo, el medidor muestra el tramo de cambios y la barra de estado agrega `+ Git: N repos`.
-- Cualquier Copy, Preview o Save as (panel, paleta o atajo) incluye cambios solo si el interruptor está activo.
+- Cualquier Copy, Preview o Save as (panel, paleta o atajo) incluye cambios solo si la casilla está activa.
 - El reporte de Show details agrega una línea: `Git changes: included (3 repos, uncommitted)` o `Git changes: not included`.
-- Tests: unit de `summarizeSelection` y `selectionStatus` con el interruptor encendido y apagado. Integración: `copyFiles` con el interruptor apagado no lleva `<changes`, con el interruptor encendido sí, y el reporte trae la línea correcta.
+- Tests: unit de `summarizeSelection` y `selectionStatus` con la casilla encendida y apagada. Integración: `copyFiles` con la casilla apagada no lleva `<changes`, con la casilla encendida sí, y el reporte trae la línea correcta.
 
-`selectionStatus` vive en `src/domain/services/selection-budget.service.ts` y hoy no conoce el interruptor. El texto actual de la barra es `$(files) ${fileCount} files · ${tokenLabel} · ${formatLabel}`. El sufijo `+ Git: N repos` se agrega solo con el interruptor activo. `N` es la cantidad de repos marcados, no la de cambios.
+`selectionStatus` vive en `src/domain/services/selection-budget.service.ts` y hoy no conoce la casilla. El texto actual de la barra es `$(files) ${fileCount} files · ${tokenLabel} · ${formatLabel}`. El sufijo `+ Git: N repos` se agrega solo con la casilla activa. `N` es la cantidad de repos marcados, no la de cambios.
 
 ### Glob
 
@@ -60,14 +60,14 @@ Atajo global candidato para Copy changes: se verifica contra los keybindings por
 
 `role="meter"`, `aria-valuemin="0"`, `aria-valuemax` igual al presupuesto y `aria-valuenow` limitado al máximo.
 
-`aria-valuetext` describe el desglose. El mismo texto va en `title`.
+`aria-valuetext` describe el desglose. El mismo texto va en `title`. Bajo la barra hay una leyenda mínima: tres marcas con `changes`, `files` y `tree`, además del texto de desglose.
 
 - Dentro del presupuesto: `41k of 64k tokens: changes 12k, files 27k, tree 2k`
 - Con exceso: `84k of 64k tokens, 20k over budget: changes 31k, files 50k, tree 3k`
 
 Con `tokenBudget = 0` no hay meter: queda un texto de estado con el desglose y la acción "Set a token budget".
 
-### Dónde se escriben los interruptores de Output
+### Dónde se escriben las casillas de Output
 
 Escriben en el ámbito donde vive el valor efectivo: Workspace si ya hay un valor de workspace, y si no, User. Así no se ensucia `.vscode/settings.json`. `changeOutputFormat` pasa a usar el mismo helper. Hoy escribe siempre `ConfigurationTarget.Workspace` (`src/presentation/status/selection-status.bar.ts`, llamada a `update` de `outputFormat`).
 
@@ -95,7 +95,7 @@ Casos de uso nuevos en `src/domain/use-cases/`:
 | --- | --- |
 | `git/describe-repositories` | Nombre, rama, upstream, ahead/behind y número de cambios, leídos del estado de la API de Git sin lanzar procesos. |
 | `git/list-base-branches` | Upstream, dev y main primero, después el resto. Extiende `baseChoices` (`src/domain/services/git-changes.service.ts`). Hoy `baseChoices` solo devuelve upstream, dev y main. |
-| `git/collect-changes` | Recibe alcance, base y modo de untracked. Para el alcance commit usa `getCommit('HEAD')` y trae el mensaje. No abre QuickPick. |
+| `git/collect-changes` | Recibe alcance, base y modo de untracked. En 1.1 el alcance commit es "Last commit": `getCommit('HEAD')` y el mensaje, paridad con `gcopy --last`. No abre QuickPick. El selector de commit queda para 1.2. |
 | `files/find-files` | Pattern y Contains. 1.2. |
 | `selection/apply-file-selection` | Add o Replace, y registra el historial. 1.2. |
 | `prompt/summarize-selection` | Alimenta el medidor y la barra de estado. |
@@ -244,7 +244,7 @@ Los textos de la webview no se hardcodean en el script. El host los manda en `st
 
 ## Persistencia
 
-- `workspaceState`, clave `promptfold.panel`: secciones abiertas, interruptor de Git, alcance, base y los campos de Find.
+- `workspaceState`, clave `promptfold.panel`: secciones abiertas, casilla de Git, alcance, base y los campos de Find. `SetSectionOpen` escribe si Git, Find files y Output están abiertas. Cerradas, el encabezado muestra el resumen: `Git · 2 repos · Current`, `Find · 38 files`, `Output · XML · 84k`.
 - Las marcas de repos se recalculan desde el contexto cada vez que se resuelve el panel. No se guardan.
 - `getState` / `setState` de la webview: texto a medio escribir, filtro de ramas, scroll y foco. Así no hace falta `retainContextWhenHidden`.
 - `promptfold.untrackedContent` es un setting, no estado de panel.
@@ -266,7 +266,7 @@ Quedan como fallback:
 - El diálogo nativo de Save as.
 - El modal de presupuesto, solo cuando la copia viene de la paleta o de un atajo. Desde el panel el exceso ya se ve en línea.
 
-Las etiquetas de alcance que ya existen se reutilizan, no se inventan otras: "Current changes", "Staged only", "A specific commit", "Compare branch" (`gitScopeMenu` en `git-changes.service.ts`). Untracked: "Names" y "Content".
+En el panel, Scope, Untracked y Format son controles segmentados de una fila (`role="radiogroup"`, flechas). Etiquetas: `Current`, `Staged`, `Last commit`, `Branch`; `Names`, `Content`; `XML`, `MD`, `Text`. El estado lo da el segmento, no una fila resaltada. `Last commit` en 1.1 no reutiliza "A specific commit" de `gitScopeMenu`: ese picker desaparece de la ruta interactiva. Untracked sigue siendo `names` y `content`.
 
 ## package.json
 
@@ -360,7 +360,7 @@ Unit con `node:test` (`npm run test:unit`):
   - Untracked names y content, incluido un archivo sensible que nunca entra.
   - Mensaje del commit en `<message>` con CDATA.
   - `panelReducer`.
-  - `summarizeSelection` y `selectionStatus` con el interruptor encendido y apagado. Encendido: el texto incluye `+ Git: 3 repos` y el desglose trae changes. Apagado: no hay sufijo Git y changes es 0.
+  - `summarizeSelection` y `selectionStatus` con la casilla encendida y apagada. Encendido: el texto incluye `+ Git: 3 repos` y el desglose trae changes. Apagado: no hay sufijo Git y changes es 0.
   - `aria-valuetext` del medidor, dentro y fuera de presupuesto, y el caso `tokenBudget = 0` sin `role="meter"`.
 - 1.2: globs y sufijos con picomatch (casos de la sección Glob) y el matcher del worker.
 
@@ -370,7 +370,7 @@ Integración con Mocha (`npm run test:vscode`):
 - 1.1
   - `copyChanges`.
   - `selectChanges` con un stub que falla si se abre un QuickPick. Los argumentos programáticos no abren UI.
-  - Copy con el interruptor apagado no lleva `<changes`. Encendido sí. El reporte trae `Git changes: included (3 repos, uncommitted)` o `Git changes: not included`.
+  - Copy con la casilla apagada no lleva `<changes`. Encendida sí. El reporte trae `Git changes: included (3 repos, uncommitted)` o `Git changes: not included`.
   - La vista resuelve bien sin carpeta: el estado vacío "Open a folder to build prompts from its files." y la acción "Open folder".
 - 1.2: Find Add y Replace.
 - El panel se maneja por la API que devuelve `activate()`. Hoy `activate` no devuelve esa API: el commit que registra el provider la expone.
@@ -431,6 +431,10 @@ La entrada de CHANGELOG de 1.1 va en el commit 10.
 
 También para 1.2, sin commit asignado: selector de commit en el panel, base por repo, Find acotado a una carpeta (reemplazaría el fallback de `selectByExtension`), retirar Extensions, opciones de mayúsculas y palabra completa, auditoría con axe, multi-root, presets de `extensionPresets` como chips, y el atajo global si en 1.1 no hubo uno libre.
 
+- Plantillas de instrucción en Output: "Review", "Explain", "Refactor (return full files)" y "Custom" (= `promptfold.systemMessage`). Control segmentado, textos por l10n, y cada plantilla editable en settings (`promptfold.instructionTemplates`). Origen: issue #13 de Thomas-McKanna/Files2Prompt.
+- Importación única desde Files2Prompt: si existen `files2prompt.systemMessage` o `files2prompt.ignoredExtensions` en la configuración del usuario y los equivalentes de promptfold están vacíos, ofrecer una notificación "Import settings from Files2Prompt" una sola vez (flag en `globalState`). Tests de que no pisa valores existentes.
+- README, nueva FAQ: ".DS_Store and other OS files" (ya excluidos; `.promptignore` funciona sin git; issue #17) y "Does Promptfold apply the model's reply? No, by design" (copiar es el flujo; sin red ni API keys).
+
 ## Mockup
 
 `docs/plans/promptfold-panel-mockup.html` es estático y autocontenido: CSS y JS inline, sin recursos remotos y sin Tailwind. Declara los mismos tokens del `@theme` apuntando a `--vscode-*`, con `--vscode-font-size: 13px`, sin `rem`. Las reglas del panel solo usan esos tokens. Los hex viven en las variables `--vscode-*`.
@@ -444,14 +448,15 @@ Colores descargados de VS Code 1.125.0, la versión de `engines`:
 
 El mockup muestra el diseño completo, Find files incluido, sin rótulos de versión ni de mockup dentro de los marcos. El reparto 1.1 / 1.2 vive solo en este documento.
 
-Cuatro marcos de 300 px con el chrome del sidebar: cabecera Promptfold, vista Prompt abierta, Files colapsada debajo.
+Marcos de 300 px con el chrome del sidebar: cabecera Promptfold, vista Prompt, Files colapsada debajo. El marco de trabajo, con Git, Find files y Output abiertas, cabe en 640 px de alto.
 
-- Marco de trabajo: tres repos (api con ↑2 ↓0, web con submódulo, docs limpio y desactivado), Current changes, Untracked = Names, búsqueda `.schema.ts,.spec.ts` + "zod" con 38 archivos y unos 12.4k tokens y una muestra de rutas, Output en XML con el medidor por encima del presupuesto de 64k. La barra de estado simulada muestra `+ Git: 3 repos`.
-- Marco de rama: Compare branch, lista upstream / dev / main y el filtro, aviso de más de 8 repos, un repo en detached HEAD y otro sin upstream.
-- Marco pendiente: skeleton con `aria-busy` y sin la palabra "Loading", Find sin coincidencias y regex inválida.
+- Marco de trabajo: tres repos (api con ↑2 ↓0 y `12 files` a la derecha, web con submódulo, docs `clean` en fuente UI y desactivado), Scope `Current | Staged | Last commit | Branch`, Untracked `Names | Content`, Pattern `.schema.ts,.spec.ts`, Contains `zod` con el toggle "Regex", Output `XML | MD | Text`, medidor sobre 64k con leyenda `changes` / `files` / `tree`. La barra de estado muestra `+ Git: 2 repos`.
+- Marco cerrado: las tres secciones colapsadas, con `Git · 2 repos · Current`, `Find · 38 files` y `Output · XML · 84k`.
+- Marco de rama: `Branch`, filtro, y upstream / dev / main / la coincidencia larga en el mismo `radiogroup`. Aviso de más de 8 repos, detached y `No upstream` en fuente UI.
+- Marco pendiente: skeleton con `aria-busy` y sin la palabra "Loading". El relleno es `--color-widget-border` (1.36:1 en Dark Modern, 1.19:1 en Light Modern, bajo 1.5:1). El borde es `--color-placeholder` (6.16:1 y 4.28:1) para que la barra se vea. Find sin coincidencias. Un glob inválido en Pattern (`This pattern is not a valid glob.`) y el error de regex en Contains, con "Regex" pulsado.
 - Marco vacío: tres paneles cortos (Git no disponible, sin repos, sin carpeta), cada uno con su texto y su acción.
 
-El medidor del marco de trabajo usa `role="meter"`, el `aria-valuetext` de exceso y el mismo `title`. `aria-valuenow` queda en 64000, el máximo.
+El medidor del marco de trabajo usa `role="meter"`, el `aria-valuetext` de exceso y el mismo `title`. `aria-valuenow` queda en 64000, el máximo. "Include in prompt", "Include tree" y "Compact whitespace" son casillas nativas.
 
 ## Fuera de alcance de este documento
 
