@@ -43,8 +43,22 @@ Pushing a tag that starts with `v` runs `.github/workflows/publish.yml` in two j
 `publish` starts after `verify`. It installs dependencies with `npm ci --ignore-scripts`, still without tokens in that step, downloads that same VSIX, and publishes it. Each token is visible only to its own publish step. At the end it creates a GitHub Release for the tag, using the notes for that version from `CHANGELOG.md`, and attaches the VSIX. Set these repository secrets first:
 
 - `VSCE_PAT`: a Personal Access Token for the Visual Studio Marketplace publisher `gianzapata`.
-- `OVSX_PAT`: an access token for Open VSX.
+- `OVSX_PAT`: an access token for Open VSX. The publish job uses the pinned `ovsx` devDependency to upload the same `promptfold.vsix` that `verify` packaged. It does not create the namespace and it does not read the token from the repository.
 
 If a secret is missing, that registry is skipped with a warning and the job still passes.
+
+Open VSX namespace, done by a person, not by CI:
+
+1. The namespace is the `publisher` field, `gianzapata`. It must match the Marketplace publisher. Open VSX only lets the namespace owner publish an extension that already exists on the Marketplace.
+2. Create an Eclipse account at https://accounts.eclipse.org/user/register with the same GitHub username used to sign in to Open VSX. Sign in at https://open-vsx.org, open Settings, choose Log in with Eclipse, and accept the Publisher Agreement.
+3. Create an access token at https://open-vsx.org/user-settings/tokens. Copy it once. It is not shown again.
+4. Create the namespace locally, with that token, not in GitHub Actions:
+
+```sh
+npx ovsx create-namespace gianzapata -p "$OVSX_PAT"
+```
+
+5. Claim ownership of `gianzapata` so the extension is marked verified. See https://github.com/eclipsefdn/open-vsx.org/wiki/Managing-Namespaces.
+6. In the GitHub repository, add a secret named `OVSX_PAT` with that token. Do not commit the token.
 
 Azure DevOps retires global PATs on 2026-12-01. After that date, publishing to the Marketplace requires `vsce publish --azure-credential` (Microsoft Entra ID) instead of `VSCE_PAT`.
