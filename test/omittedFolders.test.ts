@@ -6,6 +6,7 @@ import path from 'path';
 
 import {
   omittedFoldersForSelection,
+  omittedFoldersFromChecks,
   selectionRoots
 } from '../src/infrastructure/filesystem/select-files.walker';
 import { createIgnoreResolver } from '../src/infrastructure/ignore/ignore-resolver.service';
@@ -20,6 +21,31 @@ const write = (root: string, relativePath: string) => {
 
   return fullPath;
 };
+
+test('unchecking the root then checking three files drops the previous folder walk', () => {
+  const root = makeRoot();
+
+  write(root, 'node_modules/pkg/index.js');
+  write(root, 'a/one.ts');
+  write(root, 'b/two.ts');
+  write(root, 'c/three.ts');
+  const resolver = createIgnoreResolver({ workspaceRoot: root });
+  const fromRoot = omittedFoldersFromChecks(
+    root,
+    [{ path: root, directory: true }],
+    resolver.resolve
+  );
+  const threeFiles = ['a/one.ts', 'b/two.ts', 'c/three.ts'].map(name => ({
+    path: path.join(root, name),
+    directory: false
+  }));
+
+  assert.equal(fromRoot.includes('node_modules'), true);
+  assert.deepEqual(
+    omittedFoldersFromChecks(root, threeFiles, resolver.resolve),
+    []
+  );
+});
 
 test('omitted folders follow the selected files when parent folders are unchecked', () => {
   const root = makeRoot();

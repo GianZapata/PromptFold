@@ -199,6 +199,17 @@ const outermostDirectories = (checkedDirectories: string[]): string[] => {
   );
 };
 
+export const omittedFoldersFromChecks = (
+  workspaceRoot: string,
+  checked: Array<{ path: string; directory: boolean }>,
+  resolve: (relativePath: string, kind: AnyPathKind) => IgnoreDecision
+) =>
+  omittedFoldersForSelection(
+    workspaceRoot,
+    checked.filter(item => item.directory).map(item => item.path),
+    resolve
+  );
+
 export const omittedFoldersForSelection = (
   workspaceRoot: string,
   checkedDirectories: string[],
