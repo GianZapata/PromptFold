@@ -2,7 +2,7 @@
 
 Vista webview de unos 300 px para decidir qué entra al prompt y copiarlo sin QuickPicks. 1.1 cubre Git en vivo y Output, con paridad de `gcopy`. 1.2 agrega Find files. El mockup está en `docs/plans/promptfold-panel-mockup.html`.
 
-Rama: `feature/promptfold-panel`, creada desde `integration/local` @ `6199ab7` (`chore: title the settings group Promptfold`). `integration/local` no se mueve. Este documento no autoriza edits en `src/`.
+Rama: `feature/promptfold-panel`, sobre `main` @ `8252822` (`docs: date 1.0.1 changelog`, v1.0.1). Este documento no autoriza edits en `src/`.
 
 `docs/` está en `.gitignore`. Estos dos archivos entran con `git add -f`, sin abrir el resto de `docs/`.
 
