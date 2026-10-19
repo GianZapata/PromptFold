@@ -24,6 +24,17 @@ suite('Promptfold installed from the packaged VSIX', () => {
     );
 
     assert.equal(extension.packageJSON.version, process.env.F2P_VERSION);
+    console.log(`editor ${vscode.version}`);
+  });
+
+  test('runs in the requested editor', () => {
+    const expected = process.env.F2P_EDITOR_VERSION ?? '';
+
+    if (/^\d+\.\d+\.\d+$/.test(expected)) {
+      assert.equal(vscode.version, expected);
+    } else {
+      assert.match(vscode.version, /^\d+\.\d+\.\d+/);
+    }
   });
 
   test('registers its commands', async () => {
