@@ -2,7 +2,7 @@
 
 Vista webview de unos 300 px, con la densidad de Source Control, para decidir qué entra al prompt y copiarlo sin QuickPicks. 1.1 cubre Git (Uncommitted, Commits y Branch), Files, Optimize en el corte de 1.1, y Output, con paridad de `gcopy`. 1.2 agrega Find files por el `+` de Files, Strip comments y Log excerpt. El mockup está en `docs/plans/promptfold-panel-mockup.html`.
 
-Rama: `feature/promptfold-panel`, sobre `main` @ `f384a8a` (`chore: release 1.0.2`). El mínimo es VS Code 1.107.0: `engines.vscode` es `^1.107.0` y `@types/vscode` es exacto `1.107.0`. Este documento no autoriza edits en `src/`.
+Rama: `feature/promptfold-panel`, sobre `main` @ `0190593` (`test: format the prompt output test and drop the smoke log`). El mínimo es VS Code 1.107.0: `engines.vscode` es `^1.107.0` y `@types/vscode` es exacto `1.107.0`. Este documento no autoriza edits en `src/`.
 
 `docs/` está en `.gitignore`. Estos dos archivos entran con `git add -f`, sin abrir el resto de `docs/`.
 
