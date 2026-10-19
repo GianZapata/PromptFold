@@ -4,7 +4,13 @@ All notable changes to this project are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.2] - Unreleased
+## [1.0.3] - Unreleased
+
+### Fixed
+
+- A newly added file keeps its bytes in the Git diff: an empty file stays empty, a missing final newline stays missing, and intentional blank lines stay. Line endings are still normalized to LF. (#12)
+
+## [1.0.2] - 2026-10-19
 
 ### Fixed
 
@@ -45,5 +51,7 @@ Initial release of Promptfold, based on Files2Prompt 1.8.0 by Thomas McKanna (MI
 - Sensitive files such as credentials and keys are never included, in files or in diffs.
 - Links that point outside the workspace are skipped.
 
+[1.0.3]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.3
+[1.0.2]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.2
 [1.0.1]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.1
 [1.0.0]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.0
