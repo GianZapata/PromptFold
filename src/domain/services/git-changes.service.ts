@@ -198,7 +198,80 @@ export const mapGitStatus = (
     return GitChangeStatus.Renamed;
   }
 
+  if (status >= 12 && status <= 18) return GitChangeStatus.Modified;
+
   return undefined;
+};
+
+export interface GitStatusEntry {
+  path: string;
+  status: number;
+  originalPath?: string;
+}
+
+export interface GitStatusGroups {
+  indexChanges?: GitStatusEntry[];
+  workingTreeChanges?: GitStatusEntry[];
+  untrackedChanges?: GitStatusEntry[];
+  mergeChanges?: GitStatusEntry[];
+}
+
+const toMappedChange = (entry: GitStatusEntry): RawGitChange | undefined => {
+  const status = mapGitStatus(entry.status);
+
+  if (!status) return undefined;
+
+  return {
+    path: entry.path,
+    status,
+    ...(entry.originalPath ? { originalPath: entry.originalPath } : {})
+  };
+};
+
+export const changesFromGitState = (groups: GitStatusGroups) => {
+  const seen = new Set<string>();
+  const staged: RawGitChange[] = [];
+  const working: RawGitChange[] = [];
+  const untracked: RawGitChange[] = [];
+
+  const take = (change: RawGitChange | undefined, bucket: RawGitChange[]) => {
+    if (!change || seen.has(change.path)) return;
+
+    seen.add(change.path);
+    bucket.push(change);
+  };
+
+  for (const entry of groups.mergeChanges ?? []) {
+    const mapped = toMappedChange(entry);
+
+    if (!mapped) continue;
+
+    take({ ...mapped, status: GitChangeStatus.Modified }, working);
+  }
+
+  for (const entry of groups.indexChanges ?? [])
+    take(toMappedChange(entry), staged);
+
+  for (const entry of groups.workingTreeChanges ?? []) {
+    const mapped = toMappedChange(entry);
+
+    if (!mapped) continue;
+
+    take(
+      mapped,
+      mapped.status === GitChangeStatus.Untracked ? untracked : working
+    );
+  }
+
+  for (const entry of groups.untrackedChanges ?? []) {
+    const mapped = toMappedChange(entry);
+
+    if (!mapped) continue;
+
+    take({ ...mapped, status: GitChangeStatus.Untracked }, untracked);
+  }
+
+  return { staged, working, untracked };
 };
 
 const toPromptChange = (repo: string, change: RawGitChange): PromptChange => {

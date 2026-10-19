@@ -25,6 +25,7 @@ import {
 import {
   baseChoices,
   changesForScope,
+  changesFromGitState,
   mapGitStatus
 } from '../../domain/services/git-changes.service';
 import {
@@ -75,6 +76,8 @@ export interface VscodeGitRepoState {
   HEAD?: VscodeGitHeadLike;
   indexChanges?: VscodeGitStatusChange[];
   workingTreeChanges?: VscodeGitStatusChange[];
+  untrackedChanges?: VscodeGitStatusChange[];
+  mergeChanges?: VscodeGitStatusChange[];
   refs?: VscodeGitRefLike[];
   submodules?: VscodeGitSubmoduleLike[];
 }
@@ -238,18 +241,36 @@ export class VscodeGitDataSource extends GitDataSource {
       };
     };
 
-    const staged = (repository.state.indexChanges ?? [])
-      .map(item => toRaw(item))
-      .filter((item): item is RawGitChange => item !== undefined);
+    const toEntry = (change: VscodeGitStatusChange) => {
+      const filePath = path
+        .relative(repository.rootUri.fsPath, change.uri.fsPath)
+        .split(path.sep)
+        .join('/');
 
-    const working = (repository.state.workingTreeChanges ?? [])
-      .map(item => toRaw(item))
-      .filter((item): item is RawGitChange => item !== undefined);
+      const original = path
+        .relative(repository.rootUri.fsPath, change.originalUri.fsPath)
+        .split(path.sep)
+        .join('/');
 
-    const untracked = working.filter(change => change.status === 'untracked');
-    const trackedWorking = working.filter(
-      change => change.status !== 'untracked'
-    );
+      return {
+        path: filePath,
+        originalPath: original !== filePath ? original : undefined,
+        status: change.status
+      };
+    };
+
+    const collected = changesFromGitState({
+      indexChanges: (repository.state.indexChanges ?? []).map(toEntry),
+      workingTreeChanges: (repository.state.workingTreeChanges ?? []).map(
+        toEntry
+      ),
+      untrackedChanges: (repository.state.untrackedChanges ?? []).map(toEntry),
+      mergeChanges: (repository.state.mergeChanges ?? []).map(toEntry)
+    });
+
+    const staged = collected.staged;
+    const trackedWorking = collected.working;
+    const untracked = collected.untracked;
 
     let commit: RawGitChange[] = [];
     let branch: RawGitChange[] = [];
