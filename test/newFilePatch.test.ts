@@ -68,6 +68,7 @@ const appliedBytes = (patch: string, fileName: string) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pf-patch-'));
 
   git(dir, ['init', '-q']);
+  git(dir, ['config', 'core.autocrlf', 'false']);
   fs.writeFileSync(path.join(dir, 'change.patch'), patch);
   execFileSync('git', ['apply', 'change.patch'], {
     cwd: dir,
