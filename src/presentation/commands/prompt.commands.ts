@@ -251,15 +251,13 @@ export const registerPromptCommands = (
 
   const confirmNotice = async (notice: CopyNotice) => {
     const message = vscode.l10n.t(notice.message, ...notice.args);
-    const cancel = vscode.l10n.t('Cancel');
 
     if (notice.kind !== CopyNoticeKind.Tokens) {
       const copyFits = vscode.l10n.t('Copy what fits');
       const choice = await vscode.window.showWarningMessage(
         message,
         { modal: true },
-        copyFits,
-        cancel
+        copyFits
       );
 
       return choice === copyFits;
@@ -273,8 +271,7 @@ export const registerPromptCommands = (
       message,
       { modal: true },
       copyAnyway,
-      remember,
-      cancel
+      remember
     );
 
     if (choice === remember) {

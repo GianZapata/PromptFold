@@ -261,8 +261,7 @@ export const registerGitCommands = (
           const choice = await vscode.window.showWarningMessage(
             vscode.l10n.t('Include the submodule diff?'),
             { modal: true },
-            includeInner,
-            vscode.l10n.t('Cancel')
+            includeInner
           );
 
           if (choice !== includeInner) {

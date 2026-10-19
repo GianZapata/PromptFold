@@ -124,8 +124,7 @@ export const confirmExcluded = async (
     ),
     { modal: true },
     include,
-    remember,
-    vscode.l10n.t('Cancel')
+    remember
   );
 
   if (choice === remember) {

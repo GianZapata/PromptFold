@@ -389,7 +389,11 @@ suite('Promptfold with two git repositories', () => {
 
     assert.equal(warnings.length, 1);
     assert.match(warnings[0].message, /promptfold\.maxTotalBytes/);
-    assert.deepEqual(warnings[0].actions, ['Copy what fits', 'Cancel']);
+    assert.deepEqual(warnings[0].actions, ['Copy what fits']);
+    assert.equal(
+      warnings[0].items.some(item => item.title === 'Cancel'),
+      false
+    );
   });
 
   test('over only the token budget asks once and can be silenced for the workspace', async () => {
@@ -399,9 +403,12 @@ suite('Promptfold with two git repositories', () => {
     assert.match(warnings[0].message, /promptfold\.tokenBudget/);
     assert.deepEqual(warnings[0].actions, [
       'Copy anyway',
-      'Do not ask again in this workspace',
-      'Cancel'
+      'Do not ask again in this workspace'
     ]);
+    assert.equal(
+      warnings[0].items.some(item => item.title === 'Cancel'),
+      false
+    );
   });
 
   test('changing the token budget brings the silenced notice back', async () => {

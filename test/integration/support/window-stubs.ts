@@ -12,9 +12,15 @@ export interface WindowScript {
   warningChoice?: (message: string, actions: string[]) => string | undefined;
 }
 
+export interface RecordedMessageItem {
+  title: string;
+  isCloseAffordance: boolean;
+}
+
 export interface RecordedMessage {
   message: string;
   actions: string[];
+  items: RecordedMessageItem[];
 }
 
 export interface WindowRecording {
@@ -50,12 +56,35 @@ export const stubWindow = (script: WindowScript): WindowRecording => {
     restore: () => undefined
   };
 
-  const record = (message: string, rest: unknown[]) => {
-    const actions = rest.filter(
-      (item): item is string => typeof item === 'string'
-    );
+  const describeItem = (item: unknown): RecordedMessageItem | undefined => {
+    if (typeof item === 'string') {
+      return { title: item, isCloseAffordance: false };
+    }
 
-    recording.messages.push({ message, actions });
+    if (!item || typeof item !== 'object' || !('title' in item)) {
+      return undefined;
+    }
+
+    const title = item.title;
+
+    if (typeof title !== 'string') return undefined;
+
+    return {
+      title,
+      isCloseAffordance:
+        'isCloseAffordance' in item && item.isCloseAffordance === true
+    };
+  };
+
+  const record = (message: string, rest: unknown[]) => {
+    const items = rest.flatMap(item => {
+      const described = describeItem(item);
+
+      return described ? [described] : [];
+    });
+    const actions = items.map(item => item.title);
+
+    recording.messages.push({ message, actions, items });
 
     return Promise.resolve(script.warningChoice?.(message, actions));
   };
