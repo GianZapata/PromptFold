@@ -1,117 +1,140 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Promptfold panel</title>
   <style>
-    /* Theme values from VS Code 1.125.0.
-       Hex lives only on --vscode-*. Panel rules use the mapped tokens. */
-    :root,
-    [data-theme="dark"] {
+    /* Neutrals stand in for VS Code 1.125.0. Accent is brand indigo except in high contrast. */
+    body.vscode-dark {
       color-scheme: dark;
-      --vscode-font-size: 13px;
-      --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      --vscode-editor-font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
       --vscode-sideBar-background: #181818;
-      --vscode-sideBar-border: #2B2B2B;
-      --vscode-foreground: #CCCCCC;
-      --vscode-descriptionForeground: #9D9D9D;
+      --vscode-sideBar-border: #2b2b2b;
+      --vscode-foreground: #cccccc;
+      --vscode-descriptionForeground: #9d9d9d;
       --vscode-widget-border: #313131;
-      --vscode-button-background: #0078D4;
-      --vscode-button-foreground: #FFFFFF;
-      --vscode-button-hoverBackground: #026EC1;
-      --vscode-button-secondaryBackground: #00000000;
-      --vscode-button-secondaryForeground: #CCCCCC;
-      --vscode-button-secondaryHoverBackground: #2B2B2B;
       --vscode-input-background: #313131;
-      --vscode-input-border: #3C3C3C;
+      --vscode-input-border: #3c3c3c;
       --vscode-input-placeholderForeground: #989898;
-      --vscode-focusBorder: #0078D4;
-      --vscode-gitDecoration-modifiedResourceForeground: #E2C08D;
+      --vscode-focusBorder: #0078d4;
+      --vscode-list-hoverBackground: #2a2d2e;
+      --vscode-list-activeSelectionBackground: #04395e;
+      --vscode-gitDecoration-modifiedResourceForeground: #e2c08d;
+      --vscode-gitDecoration-addedResourceForeground: #81b88b;
+      --vscode-gitDecoration-deletedResourceForeground: #c74e39;
+      --vscode-gitDecoration-untrackedResourceForeground: #73c991;
       --vscode-gitDecoration-submoduleResourceForeground: #8db9e2;
-      --vscode-editorWarning-foreground: #CCA700;
-      --vscode-errorForeground: #F85149;
-      --vscode-activityBar-foreground: #D7D7D7;
-      --color-on-warning: var(--vscode-sideBar-background);
+      --pf-accent: #5b5bd6;
+      --pf-accent-hover: #4c4c9e;
+      --pf-accent-fg: #ffffff;
+      --pf-accent-text: #a3a3f7;
+      --pf-accent-meter: #8b8bf0;
+      --pf-accent-soft: #c9c9fa;
+      --pf-accent-deep: #4c4c9e;
     }
 
-    [data-theme="light"] {
+    body.vscode-light {
       color-scheme: light;
-      --vscode-sideBar-background: #F8F8F8;
-      --vscode-sideBar-border: #E5E5E5;
-      --vscode-foreground: #3B3B3B;
-      --vscode-descriptionForeground: #3B3B3B;
-      --vscode-widget-border: #E5E5E5;
-      --vscode-button-background: #005FB8;
-      --vscode-button-foreground: #FFFFFF;
-      --vscode-button-hoverBackground: #0258A8;
-      --vscode-button-secondaryBackground: #E5E5E5;
-      --vscode-button-secondaryForeground: #3B3B3B;
-      --vscode-button-secondaryHoverBackground: #CCCCCC;
-      --vscode-input-background: #FFFFFF;
-      --vscode-input-border: #CECECE;
+      --vscode-sideBar-background: #f8f8f8;
+      --vscode-sideBar-border: #e5e5e5;
+      --vscode-foreground: #3b3b3b;
+      --vscode-descriptionForeground: #3b3b3b;
+      --vscode-widget-border: #e5e5e5;
+      --vscode-input-background: #ffffff;
+      --vscode-input-border: #cecece;
       --vscode-input-placeholderForeground: #767676;
-      --vscode-focusBorder: #005FB8;
+      --vscode-focusBorder: #005fb8;
+      --vscode-list-hoverBackground: #f2f2f2;
+      --vscode-list-activeSelectionBackground: #e8e8e8;
       --vscode-gitDecoration-modifiedResourceForeground: #895503;
+      --vscode-gitDecoration-addedResourceForeground: #587c0c;
+      --vscode-gitDecoration-deletedResourceForeground: #ad0707;
+      --vscode-gitDecoration-untrackedResourceForeground: #007100;
       --vscode-gitDecoration-submoduleResourceForeground: #1258a7;
-      --vscode-editorWarning-foreground: #BF8803;
-      --vscode-errorForeground: #F85149;
-      --vscode-activityBar-foreground: #1F1F1F;
-      --color-on-warning: var(--vscode-activityBar-foreground);
+      --pf-accent: #5b5bd6;
+      --pf-accent-hover: #4c4c9e;
+      --pf-accent-fg: #ffffff;
+      --pf-accent-text: #4c4c9e;
+      --pf-accent-meter: #5b5bd6;
+      --pf-accent-soft: #3c3c9a;
+      --pf-accent-deep: #2f2f86;
+    }
+
+    body.vscode-high-contrast {
+      color-scheme: dark;
+      --vscode-sideBar-background: #000000;
+      --vscode-sideBar-border: #6fc3df;
+      --vscode-foreground: #ffffff;
+      --vscode-descriptionForeground: #ffffff;
+      --vscode-widget-border: #6fc3df;
+      --vscode-input-background: #000000;
+      --vscode-input-border: #6fc3df;
+      --vscode-input-placeholderForeground: #ffffff;
+      --vscode-focusBorder: #f38518;
+      --vscode-list-hoverBackground: #04395e;
+      --vscode-list-activeSelectionBackground: #008000;
+      --vscode-button-background: #ffffff;
+      --vscode-button-foreground: #000000;
+      --vscode-button-hoverBackground: #cccccc;
+      --vscode-contrastActiveBorder: #f38518;
+      --pf-accent: var(--vscode-button-background);
+      --pf-accent-hover: var(--vscode-button-hoverBackground);
+      --pf-accent-fg: var(--vscode-button-foreground);
+      --pf-accent-text: var(--vscode-contrastActiveBorder);
+      --pf-accent-meter: var(--vscode-contrastActiveBorder);
+      --pf-accent-soft: var(--vscode-contrastActiveBorder);
+      --pf-accent-deep: var(--vscode-contrastActiveBorder);
+    }
+
+    body.vscode-high-contrast-light {
+      color-scheme: light;
+      --vscode-sideBar-background: #ffffff;
+      --vscode-sideBar-border: #0f4a85;
+      --vscode-foreground: #000000;
+      --vscode-descriptionForeground: #000000;
+      --vscode-widget-border: #0f4a85;
+      --vscode-input-background: #ffffff;
+      --vscode-input-border: #0f4a85;
+      --vscode-input-placeholderForeground: #000000;
+      --vscode-focusBorder: #0f4a85;
+      --vscode-list-hoverBackground: #e8e8e8;
+      --vscode-list-activeSelectionBackground: #006bb3;
+      --vscode-button-background: #0f4a85;
+      --vscode-button-foreground: #ffffff;
+      --vscode-button-hoverBackground: #0b3a68;
+      --vscode-contrastActiveBorder: #0f4a85;
+      --pf-accent: var(--vscode-button-background);
+      --pf-accent-hover: var(--vscode-button-hoverBackground);
+      --pf-accent-fg: var(--vscode-button-foreground);
+      --pf-accent-text: var(--vscode-contrastActiveBorder);
+      --pf-accent-meter: var(--vscode-contrastActiveBorder);
+      --pf-accent-soft: var(--vscode-contrastActiveBorder);
+      --pf-accent-deep: var(--vscode-contrastActiveBorder);
     }
 
     :root {
       --spacing: 4px;
-      --text-ui: var(--vscode-font-size);
-      --text-ui--line-height: 1.5;
-      --text-meta: calc(var(--vscode-font-size) * 0.92);
-      --text-meta--line-height: 1.4;
-      --color-sidebar: var(--vscode-sideBar-background);
-      --color-fg: var(--vscode-foreground);
-      --color-fg-muted: var(--vscode-descriptionForeground);
-      --color-widget-border: var(--vscode-widget-border);
-      --color-side-border: var(--vscode-sideBar-border);
-      --color-button: var(--vscode-button-background);
-      --color-button-fg: var(--vscode-button-foreground);
-      --color-button-hover: var(--vscode-button-hoverBackground);
-      --color-button-secondary: var(--vscode-button-secondaryBackground);
-      --color-button-secondary-fg: var(--vscode-button-secondaryForeground);
-      --color-button-secondary-hover: var(--vscode-button-secondaryHoverBackground);
-      --color-input: var(--vscode-input-background);
-      --color-input-border: var(--vscode-input-border);
-      --color-placeholder: var(--vscode-input-placeholderForeground);
-      --color-focus: var(--vscode-focusBorder);
-      --color-git-modified: var(--vscode-gitDecoration-modifiedResourceForeground);
-      --color-git-submodule: var(--vscode-gitDecoration-submoduleResourceForeground);
-      --color-warning: var(--vscode-editorWarning-foreground);
-      --color-error: var(--vscode-errorForeground);
-      --font-ui: var(--vscode-font-family);
-      --font-mono: var(--vscode-editor-font-family);
+      --text-ui: 13px;
+      --text-meta: 12px;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
       --radius-control: 2px;
     }
 
     * { box-sizing: border-box; }
-    html { overflow-x: hidden; }
-
-    body[data-shot] [data-shot] { display: none; }
-    body[data-shot="working"] [data-shot="working"],
-    body[data-shot="closed"] [data-shot="closed"],
-    body[data-shot="branch"] [data-shot="branch"],
-    body[data-shot="pending"] [data-shot="pending"],
-    body[data-shot="snippets"] [data-shot="snippets"],
-    body[data-shot="empty"] [data-shot="empty"] { display: block; }
 
     body {
       margin: 0;
-      width: 300px;
-      max-width: 100%;
-      background: var(--color-sidebar);
-      color: var(--color-fg);
+      background: #111111;
+      color: #cccccc;
       font-family: var(--font-ui);
       font-size: var(--text-ui);
-      line-height: 16px;
+      line-height: 1.4;
     }
+
+    button,
+    summary,
+    label { touch-action: manipulation; }
 
     .visually-hidden {
       position: absolute;
@@ -127,900 +150,827 @@
 
     :focus { outline: none; }
     :focus-visible {
-      outline: 2px solid var(--color-focus);
+      outline: 2px solid var(--vscode-focusBorder);
       outline-offset: 1px;
     }
 
-    .tools {
+    .review {
       display: flex;
-      gap: var(--spacing);
-      padding: calc(var(--spacing) * 2);
-      border-bottom: 1px solid var(--color-side-border);
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #2b2b2b;
     }
 
-    .tools button {
-      appearance: none;
-      flex: 1;
-      min-height: 24px;
-      min-width: 24px;
-      padding: var(--spacing) calc(var(--spacing) * 2);
-      border: 1px solid var(--color-widget-border);
-      border-radius: var(--radius-control);
-      background: var(--color-button-secondary);
-      color: var(--color-button-secondary-fg);
-      font: inherit;
-      font-size: var(--text-meta);
-      line-height: 16px;
-      cursor: pointer;
+    .review p { margin: 0; color: #9d9d9d; font-size: var(--text-meta); }
+
+    body[data-shot] .review,
+    body[data-shot] .shot > p { display: none; }
+
+    .stage {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px;
     }
 
-    .tools button[aria-pressed="true"] {
-      background: var(--color-button);
-      color: var(--color-button-fg);
-      border-color: var(--color-button);
-    }
+    .shot { width: 300px; }
+    .shot > p { margin: 0 0 8px; color: #9d9d9d; font-size: var(--text-meta); }
+    body[data-shot] .shot { display: none; }
+    body[data-shot="uncommitted"] .shot-uncommitted,
+    body[data-shot="commits"] .shot-commits,
+    body[data-shot="optimize"] .shot-optimize,
+    body[data-shot="empty"] .shot-empty { display: block; }
 
-    .note {
-      margin: 0;
-      padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2) var(--spacing);
-      color: var(--color-fg-muted);
-      font-size: var(--text-meta);
-      line-height: var(--text-meta--line-height);
-    }
-
-    .sidebar {
+    .panel {
       width: 300px;
-      max-width: 100%;
-      overflow-x: clip;
-      background: var(--color-sidebar);
-      color: var(--color-fg);
-      border-top: 1px solid var(--color-side-border);
-      border-bottom: 1px solid var(--color-side-border);
+      background: var(--vscode-sideBar-background);
+      color: var(--vscode-foreground);
+      border: 1px solid var(--vscode-sideBar-border);
+      overscroll-behavior: contain;
     }
 
-    .sidebar + .sidebar { border-top: 0; }
-
-    .sidebar-title,
-    .view-header {
+    .panel-head,
+    .footer,
+    .meter-top,
+    .repo,
+    .file,
+    .left-out,
+    .check-row {
       display: flex;
       align-items: center;
       gap: var(--spacing);
+      min-width: 0;
+    }
+
+    .panel-head {
+      justify-content: space-between;
+      min-height: 28px;
+      padding: var(--spacing) 8px;
+      border-bottom: 1px solid var(--vscode-sideBar-border);
+    }
+
+    .panel-head h2 {
       margin: 0;
-      min-height: 24px;
-      padding: 0 calc(var(--spacing) * 2);
-      border-bottom: 1px solid var(--color-side-border);
-      color: var(--color-fg);
       font-size: var(--text-meta);
       font-weight: 600;
-      letter-spacing: 0.5px;
-      line-height: 16px;
-      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    .view-header {
-      width: 100%;
+    .icon-row { display: flex; }
+
+    .icon-btn,
+    .text-btn,
+    .btn-primary,
+    .switch,
+    .menu button,
+    .latest button {
+      appearance: none;
       border: 0;
-      border-bottom: 1px solid var(--color-side-border);
       background: transparent;
-      text-align: left;
-      cursor: pointer;
-      font-family: inherit;
+      color: inherit;
+      font: inherit;
+      border-radius: var(--radius-control);
     }
 
-    summary { list-style: none; }
-    summary::-webkit-details-marker { display: none; }
-
-    .chevron {
-      width: 16px;
-      height: 16px;
-      flex: 0 0 16px;
-      color: var(--color-fg-muted);
-    }
-
-    details:not([open]) > summary .chevron { transform: rotate(-90deg); }
-
-    .webview {
-      padding: 0 var(--spacing);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .fold-wrap { position: relative; min-width: 0; }
-    .fold { min-width: 0; }
-    .head-check {
-      position: absolute;
-      top: 0;
-      right: var(--spacing);
-      z-index: 1;
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 24px;
       height: 24px;
-      margin: 0;
-      background: var(--color-sidebar);
-    }
-    .fold-wrap:not(:has(details[open])) .head-check { display: none; }
-
-    .fold > summary {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing);
-      min-height: 24px;
-      padding: 0 var(--spacing);
-      border-bottom: 1px solid var(--color-widget-border);
-      font-size: var(--text-ui);
-      font-weight: 600;
-      line-height: 16px;
-      letter-spacing: 0;
-      text-transform: none;
-      cursor: pointer;
-    }
-
-    .fold[open] > summary .when-closed { display: none; }
-    .fold:not([open]) > summary .when-open { display: none; }
-    .fold:not([open]) > summary .when-closed { display: inline; font-weight: 400; color: var(--color-fg-muted); }
-    .fold-body {
-      display: flex;
-      flex-direction: column;
-      gap: var(--spacing);
+      min-width: 24px;
       padding: 0;
-      min-width: 0;
     }
 
-    .repo, .radio, .check, .inline-field {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing);
-      min-height: 24px;
-      min-width: 0;
-    }
-    .path-row {
-      display: flex;
-      align-items: center;
-      min-height: 16px;
-      min-width: 0;
+    .icon-btn:hover,
+    .text-btn:hover,
+    .switch:hover,
+    .menu button:hover { background: var(--vscode-list-hoverBackground); }
+
+    .icon-btn svg,
+    .chevron,
+    .section-icon { width: 16px; height: 16px; display: block; }
+
+    .meter {
+      padding: 8px;
+      border-bottom: 1px solid var(--vscode-sideBar-border);
     }
 
-    .repo-name, .path, .branch, .truncate { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .repo-name { font-weight: 600; }
-    .branch, .path, .delta, .count, .inline-field input, .contains-input {
+    .meter-top { justify-content: space-between; }
+
+    .mono,
+    .meter-count,
+    .hash,
+    .path,
+    .repo-name,
+    .count,
+    .save {
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
     }
-    .branch { flex: 1; color: var(--color-fg-muted); font-size: var(--text-meta); }
-    .delta, .count { flex: 0 0 auto; font-size: var(--text-meta); font-variant-numeric: tabular-nums; }
-    .count { margin-left: auto; color: var(--color-fg-muted); }
-    .status-word { flex: 0 0 auto; margin-left: auto; color: var(--color-fg-muted); font-family: var(--font-ui); font-size: var(--text-meta); }
-    .tag-sub { color: var(--color-git-submodule); font-family: var(--font-ui); font-size: var(--text-meta); }
-    .mark { width: 8px; height: 8px; flex: 0 0 8px; border-radius: var(--radius-control); background: var(--color-git-modified); }
-    .mark-sub { background: var(--color-git-submodule); }
-    .disabled-row { color: var(--color-fg-muted); }
 
-    input[type="checkbox"], input[type="radio"] { accent-color: var(--color-focus); }
+    .meter-saved,
+    .switch[aria-checked="true"] .save,
+    .linkish { color: var(--pf-accent-text); }
 
-    .check {
-      gap: calc(var(--spacing) * 2);
-      cursor: pointer;
-    }
-    .check input { width: 16px; height: 16px; margin: 0; flex: 0 0 16px; }
-    .checks { display: flex; flex-wrap: nowrap; gap: calc(var(--spacing) * 2); min-width: 0; }
-    .checks .check { flex: 0 1 auto; font-size: var(--text-meta); white-space: nowrap; }
-
-    .segmented {
+    .meter-track {
       display: flex;
-      min-width: 0;
-      border: 1px solid var(--color-widget-border);
+      height: 8px;
+      margin-top: var(--spacing);
+      background: var(--vscode-widget-border);
       border-radius: var(--radius-control);
+      overflow: hidden;
     }
-    .segment {
-      position: relative;
-      flex: 1 1 0;
+
+    .seg-changes { width: 18.75%; background: var(--pf-accent); }
+    .seg-files { width: 42.1875%; background: var(--pf-accent-meter); }
+    .seg-tree { width: 3.125%; background: var(--pf-accent-soft); }
+    .seg-saved {
+      width: 14.0625%;
+      background: repeating-linear-gradient(-45deg, var(--pf-accent-text) 0 1px, transparent 1px 4px);
+    }
+
+    .legend,
+    .meta,
+    .switch-desc,
+    .status-word,
+    .tag,
+    .section-summary {
+      color: var(--vscode-descriptionForeground);
+      font-size: var(--text-meta);
+      line-height: 1.4;
+    }
+
+    .legend { margin: var(--spacing) 0 0; }
+
+    details.section { border-bottom: 1px solid var(--vscode-sideBar-border); }
+
+    summary {
       display: flex;
+      align-items: center;
+      gap: var(--spacing);
+      min-height: 28px;
+      padding: 0 8px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    .section-title {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .section-summary {
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    details[open] > summary .chevron { transform: rotate(90deg); }
+
+    .section-body { padding-bottom: 8px; }
+
+    .seg,
+    .latest {
+      display: flex;
+      margin: var(--spacing) 8px;
+      border: 1px solid var(--vscode-widget-border);
+      border-radius: var(--radius-control);
+      overflow: hidden;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing);
+      margin: var(--spacing) 8px;
+      min-width: 0;
+    }
+
+    .field > span,
+    .latest-row > span {
+      flex: 0 0 auto;
+      color: var(--vscode-descriptionForeground);
+      font-size: var(--text-meta);
+    }
+
+    .field .seg,
+    .latest-row .latest { margin: 0; flex: 1; }
+
+    .seg label,
+    .latest button {
+      position: relative;
+      display: flex;
+      flex: 1;
       align-items: center;
       justify-content: center;
       min-height: 24px;
       min-width: 0;
-      padding: 0;
-      border-right: 1px solid var(--color-widget-border);
-      color: var(--color-fg);
+      padding: 0 var(--spacing);
       font-size: var(--text-meta);
-      line-height: 16px;
-      text-align: center;
-      cursor: pointer;
     }
-    .segment:last-child { border-right: 0; }
-    .segment input {
+
+    .seg input {
       position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      padding: 0;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-    .segment span { white-space: nowrap; }
-    .segment:has(input:checked) {
-      background: var(--color-button);
-      color: var(--color-button-fg);
-    }
-    .segment:has(input:focus-visible) {
-      outline: 2px solid var(--color-focus);
-      outline-offset: -2px;
+      opacity: 0;
+      inset: 0;
+      margin: 0;
     }
 
-    .radio { cursor: pointer; padding: 0 var(--spacing); }
-    .radio input { width: 16px; height: 16px; margin: 0; flex: 0 0 16px; }
-    .radio:has(input:focus-visible) {
-      outline: 2px solid var(--color-focus);
-      outline-offset: -2px;
+    .seg label:has(:checked),
+    .latest button[aria-pressed="true"] {
+      background: var(--vscode-list-activeSelectionBackground);
+      box-shadow: inset 0 -2px 0 var(--pf-accent-text);
     }
 
-    .inline-field, .contains-row { min-width: 0; }
-    .inline-field > span, .contains-row > span.label {
+    .seg label:focus-within { outline: 2px solid var(--vscode-focusBorder); outline-offset: -2px; }
+
+    .repo,
+    .file,
+    .left-out,
+    .check-row { min-height: 24px; padding: 0 8px; }
+
+    .nested { padding-left: 24px; }
+
+    .repo input,
+    .file input,
+    .check-row input,
+    .commit input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
       flex: 0 0 auto;
-      color: var(--color-fg-muted);
-      font-size: var(--text-meta);
     }
-    .inline-field input, .contains-input {
+
+    .path,
+    .repo-name,
+    .commit-msg {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .path,
+    .commit-msg { flex: 1; }
+
+    .mark {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      border-radius: 1px;
+    }
+
+    .mark-m { background: var(--vscode-gitDecoration-modifiedResourceForeground); }
+    .mark-a { background: var(--vscode-gitDecoration-addedResourceForeground); }
+    .mark-u { background: var(--vscode-gitDecoration-untrackedResourceForeground); }
+    .mark-d { background: var(--vscode-gitDecoration-deletedResourceForeground); }
+    .mark-sub { background: var(--vscode-gitDecoration-submoduleResourceForeground); }
+
+    .letter { width: 1.2em; flex: 0 0 auto; font-family: var(--font-mono); font-size: var(--text-meta); }
+    .is-deleted .path { text-decoration: line-through; }
+    .is-disabled { color: var(--vscode-descriptionForeground); }
+
+    input[type="search"],
+    select {
       flex: 1;
       min-width: 0;
       min-height: 24px;
-      padding: 0 calc(var(--spacing) * 2);
-      border: 1px solid var(--color-input-border);
+      padding: 0 8px;
+      border: 1px solid var(--vscode-input-border);
       border-radius: var(--radius-control);
-      background: var(--color-input);
-      color: var(--color-fg);
-      font-size: var(--text-ui);
-      line-height: 16px;
-    }
-    .inline-field input[aria-invalid="true"], .contains-input[aria-invalid="true"] {
-      border: 2px solid var(--color-error);
-      padding: 0 7px;
-    }
-    .regex-toggle {
-      appearance: none;
-      flex: 0 0 auto;
-      min-height: 24px;
-      min-width: 24px;
-      padding: 0 calc(var(--spacing) * 2);
-      border: 1px solid var(--color-widget-border);
-      border-radius: var(--radius-control);
-      background: var(--color-button-secondary);
-      color: var(--color-button-secondary-fg);
+      background: var(--vscode-input-background);
+      color: var(--vscode-foreground);
       font: inherit;
+      font-family: var(--font-mono);
       font-size: var(--text-meta);
-      line-height: 16px;
-      cursor: pointer;
-    }
-    .regex-toggle[aria-pressed="true"] {
-      background: var(--color-button);
-      color: var(--color-button-fg);
-      border-color: var(--color-button);
     }
 
-    .hint, .error, .count-line {
-      margin: 0;
-      color: var(--color-fg-muted);
+    input::placeholder { color: var(--vscode-input-placeholderForeground); }
+
+    .latest-row {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing);
+      margin: var(--spacing) 8px;
+    }
+
+    .text-btn {
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid var(--vscode-widget-border);
       font-size: var(--text-meta);
-      line-height: 16px;
+    }
+
+    .commit {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr);
+      gap: var(--spacing);
+      align-items: start;
+      padding: 2px 8px;
+    }
+
+    .commit-line { display: flex; gap: var(--spacing); min-width: 0; }
+    .meta { margin: 0; }
+
+    .summary-line {
+      margin: var(--spacing) 8px;
       font-variant-numeric: tabular-nums;
     }
-    .error {
-      color: var(--color-fg);
-      padding-left: calc(var(--spacing) * 2);
-      border-left: 2px solid var(--color-error);
+
+    .menu {
+      margin: 0 8px var(--spacing);
+      border: 1px solid var(--vscode-widget-border);
+      border-radius: var(--radius-control);
     }
 
-    button.btn {
-      appearance: none;
-      min-height: 24px;
-      min-width: 24px;
-      padding: 0 calc(var(--spacing) * 2);
-      border-radius: var(--radius-control);
-      border: 1px solid var(--color-widget-border);
-      background: var(--color-button-secondary);
-      color: var(--color-button-secondary-fg);
-      font: inherit;
-      font-size: var(--text-ui);
-      line-height: 16px;
-      cursor: pointer;
-    }
-    button.btn-primary {
+    .menu button {
+      display: block;
       width: 100%;
-      background: var(--color-button);
-      color: var(--color-button-fg);
-      border-color: var(--color-button);
+      min-height: 24px;
+      padding: 0 8px;
+      text-align: left;
     }
-    button.btn-primary:hover { background: var(--color-button-hover); }
-    .split { display: flex; gap: var(--spacing); }
-    .split .btn { flex: 1; }
 
-    .meter { position: relative; padding-top: var(--spacing); }
-    .meter-track {
-      position: relative;
-      display: flex;
-      gap: 1px;
-      height: 8px;
-      border-radius: var(--radius-control);
-      background: var(--color-input);
-      border: 1px solid var(--color-widget-border);
-      overflow: hidden;
+    .switch {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      width: calc(100% - 16px);
+      margin: 0 8px;
+      padding: var(--spacing) 0;
+      text-align: left;
     }
-    .seg { height: 100%; }
-    .seg-changes { width: 36.9048%; background: var(--color-fg); }
-    .seg-files { width: 59.5238%; background: var(--color-fg); opacity: 0.45; }
-    .seg-tree { width: 3.5714%; background: var(--color-fg); opacity: 0.22; }
-    .meter-track::after {
+
+    .switch-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .save { font-size: var(--text-meta); }
+
+    .switch-ui {
+      width: 28px;
+      height: 16px;
+      border: 1px solid var(--vscode-widget-border);
+      border-radius: 8px;
+      background: var(--vscode-input-background);
+      position: relative;
+    }
+
+    .switch[aria-checked="true"] .switch-ui {
+      background: var(--pf-accent);
+      border-color: var(--pf-accent);
+    }
+
+    .switch-ui::after {
       content: "";
       position: absolute;
-      left: 76.1905%;
-      right: 0;
-      top: 0;
-      height: 8px;
-      background: var(--color-warning);
-      border-left: 1px solid var(--color-fg);
-    }
-    .budget-mark {
-      position: absolute;
-      left: 76.1905%;
-      top: 0;
-      width: 1px;
+      top: 1px;
+      left: 1px;
+      width: 12px;
       height: 12px;
-      background: var(--color-fg);
+      border-radius: 50%;
+      background: #ffffff;
     }
-    .meter-legend {
-      display: flex;
-      gap: calc(var(--spacing) * 2);
-      margin: 0;
+
+    .switch[aria-checked="true"] .switch-ui::after { left: 13px; }
+    body.vscode-high-contrast .switch[aria-checked="true"] .switch-ui::after { background: var(--pf-accent-fg); }
+
+    .switch-desc,
+    .linkish { margin: 0 8px var(--spacing); }
+
+    .linkish {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
       padding: 0;
-      list-style: none;
-      color: var(--color-fg);
+      border: 0;
+      background: transparent;
+      font: inherit;
       font-size: var(--text-meta);
-      line-height: 16px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
-    .meter-legend li { display: flex; align-items: center; gap: var(--spacing); }
-    .swatch { width: 8px; height: 8px; flex: 0 0 8px; border-radius: var(--radius-control); }
-    .swatch-changes { background: var(--color-fg); }
-    .swatch-files { background: var(--color-fg); opacity: 0.45; }
-    .swatch-tree { background: var(--color-fg); opacity: 0.22; }
-    .meter-caption {
-      margin: 0;
-      font-size: var(--text-meta);
-      line-height: 16px;
-      font-variant-numeric: tabular-nums;
+
+    .left-out { flex-wrap: wrap; }
+    .left-out .text-btn { margin-left: auto; }
+
+    .empty { padding: 16px 8px; }
+    .empty p { margin: 0 0 8px; }
+
+    .footer {
+      position: sticky;
+      bottom: 0;
+      padding: 8px;
+      border-top: 1px solid var(--vscode-sideBar-border);
+      background: var(--vscode-sideBar-background);
     }
-    .over-badge {
-      display: inline-block;
-      padding: 0 var(--spacing);
-      border-radius: var(--radius-control);
-      background: var(--color-warning);
-      color: var(--color-on-warning);
+
+    .btn-primary {
+      flex: 1;
+      min-height: 28px;
+      padding: 0 8px;
+      border: 1px solid var(--pf-accent);
+      background: var(--pf-accent);
+      color: var(--pf-accent-fg);
       font-weight: 600;
     }
 
-    .notice {
-      margin: 0;
-      padding: var(--spacing) calc(var(--spacing) * 2);
-      border-left: 2px solid var(--color-fg);
-      color: var(--color-fg);
-      font-size: var(--text-meta);
-      line-height: 16px;
+    .btn-primary:hover:not(:disabled) {
+      background: var(--pf-accent-hover);
+      border-color: var(--pf-accent-hover);
     }
-    .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: calc(var(--spacing) * 2);
-      padding: var(--spacing) 0;
-    }
-    .empty p { margin: 0; }
 
-    .bones { display: flex; flex-direction: column; gap: calc(var(--spacing) * 2); }
-    .bone {
-      height: 8px;
-      border-radius: var(--radius-control);
-      background: var(--color-widget-border);
-      border: 1px solid var(--color-placeholder);
-    }
-    .bone-lg { width: 92%; }
-    .bone-md { width: 70%; }
-    .bone-sm { width: 40%; }
-    @media (prefers-reduced-motion: no-preference) {
-      .bones[aria-busy="true"] .bone { animation: pulse 1.2s ease-in-out infinite; }
-    }
-    @keyframes pulse { 50% { opacity: 0.55; } }
+    .btn-primary:disabled { color: var(--vscode-descriptionForeground); background: var(--vscode-widget-border); border-color: var(--vscode-widget-border); }
+    .icon-btn:disabled { color: var(--vscode-descriptionForeground); }
 
-    .statusbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: calc(var(--spacing) * 2);
-      min-height: 24px;
-      padding: 0 calc(var(--spacing) * 2);
-      border-top: 1px solid var(--color-side-border);
-      font-size: var(--text-meta);
-      line-height: 16px;
-      font-variant-numeric: tabular-nums;
+    @media (prefers-reduced-motion: reduce) {
+      .chevron { transition: none; }
     }
-    .statusbar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   </style>
 </head>
-<body>
+<body class="vscode-dark">
   <h1 class="visually-hidden">Promptfold panel</h1>
-  <div class="tools" role="group" aria-label="Theme">
-    <button type="button" data-theme-choice="dark" aria-pressed="true">Dark Modern</button>
-    <button type="button" data-theme-choice="light" aria-pressed="false">Light Modern</button>
+  <div class="review" role="group" aria-label="Theme">
+    <p>Review chrome. Not part of the panel.</p>
+    <button type="button" class="text-btn" data-theme-choice="dark" aria-pressed="true">Dark</button>
+    <button type="button" class="text-btn" data-theme-choice="light" aria-pressed="false">Light</button>
+    <button type="button" class="text-btn" data-theme-choice="hc" aria-pressed="false">High contrast</button>
+    <button type="button" class="text-btn" data-theme-choice="hc-light" aria-pressed="false">High contrast light</button>
   </div>
-
-  <p class="note" data-shot="working">Working selection</p>
-  <article class="sidebar" id="working" data-shot="working" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <div class="fold-wrap">
-        <details class="fold" open>
+  <div class="stage">
+    <div class="shot shot-uncommitted">
+      <p>Uncommitted</p>
+      <article class="panel" aria-label="Uncommitted">
+        <header class="panel-head">
+          <h2 translate="no">PROMPTFOLD</h2>
+          <div class="icon-row">
+            <button type="button" class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.2-3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 2.5V6H9.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Selection history"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5.2V8l2 1.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.8v1.8M8 12.4v1.8M1.8 8h1.8M12.4 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          </div>
+        </header>
+        <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="64000" aria-valuenow="41000" aria-valuetext="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k" title="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k">
+          <div class="meter-top" aria-hidden="true"><span class="meter-count">41k / 64k tokens</span><span class="meter-saved">−9k optimized</span></div>
+          <div class="meter-track" aria-hidden="true"><span class="seg-changes"></span><span class="seg-files"></span><span class="seg-tree"></span><span class="seg-saved"></span></div>
+          <p class="legend" aria-hidden="true">changes 12k · files 27k · tree 2k</p>
+        </div>
+        <details class="section" open>
           <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-            <span class="when-closed">· 2 repos · Current</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <svg class="section-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M4 8h5a2.5 2.5 0 0 0 0-5H4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Git</span>
+            <span class="section-summary">2 repos · Uncommitted</span>
           </summary>
-          <div class="fold-body">
+          <div class="section-body">
+            <div class="seg" role="radiogroup" aria-label="Git mode">
+              <label><input type="radio" name="mode-u" checked><span>Uncommitted</span></label>
+              <label><input type="radio" name="mode-u"><span>Commits</span></label>
+              <label><input type="radio" name="mode-u"><span>Branch</span></label>
+            </div>
             <div class="repo">
               <input type="checkbox" checked aria-label="Include api">
-              <span class="mark" aria-hidden="true"></span>
-              <span class="repo-name">api</span>
-              <span class="branch" title="feature/panel">feature/panel</span>
-              <span class="delta"><span class="visually-hidden">2 ahead, 0 behind</span><span aria-hidden="true">↑2 ↓0</span></span>
-              <span class="count">12 files</span>
+              <span class="repo-name" translate="no">api</span>
+              <span class="status-word" title="feature/panel" translate="no">feature/panel</span>
+              <span class="count"><span class="visually-hidden">2 ahead, 0 behind</span><span aria-hidden="true">↑2 ↓0</span></span>
+              <span class="count">9.1k</span>
+            </div>
+            <div class="file nested">
+              <input type="checkbox" checked aria-label="Include modified invoice-payment.schema.ts">
+              <span class="mark mark-m" title="Modified"></span>
+              <span class="letter" aria-hidden="true">M</span>
+              <span class="path" title="invoice-payment.schema.ts" translate="no">invoice-payment.schema.ts</span>
+              <span class="count">+42 −7</span>
+            </div>
+            <div class="file nested">
+              <input type="checkbox" checked aria-label="Include added payment.fixture.ts">
+              <span class="mark mark-a" title="Added"></span>
+              <span class="letter" aria-hidden="true">A</span>
+              <span class="path" translate="no">payment.fixture.ts</span>
+              <span class="count">+18 −0</span>
+            </div>
+            <div class="file nested">
+              <input type="checkbox" checked aria-label="Include untracked notes.md">
+              <span class="mark mark-u" title="Untracked"></span>
+              <span class="letter" aria-hidden="true">U</span>
+              <span class="path" translate="no">notes.md</span>
+              <span class="count">+12 −0</span>
+            </div>
+            <div class="file nested is-deleted">
+              <input type="checkbox" checked aria-label="Include deleted old-payment.ts">
+              <span class="mark mark-d" title="Deleted"></span>
+              <span class="letter" aria-hidden="true">D</span>
+              <span class="path" translate="no">old-payment.ts</span>
+              <span class="count">+0 −30</span>
             </div>
             <div class="repo">
-              <input type="checkbox" checked aria-label="Include web">
-              <span class="mark mark-sub" aria-hidden="true"></span>
-              <span class="repo-name">web</span>
-              <span class="branch" title="main">main</span>
-              <span class="tag-sub">submodule</span>
-              <span class="count">4 files</span>
+              <input type="checkbox" checked aria-label="Include web, submodule">
+              <span class="mark mark-sub" title="Submodule"></span>
+              <span class="repo-name" translate="no">web</span>
+              <span class="status-word" translate="no">main</span>
+              <span class="tag">submodule</span>
+              <span class="count">2.9k</span>
             </div>
-            <div class="repo disabled-row">
-              <input type="checkbox" disabled aria-label="Include docs, no changes in this repository">
-              <span class="repo-name">docs</span>
-              <span class="status-word">clean</span>
+            <div class="repo is-disabled">
+              <input type="checkbox" disabled aria-label="Include docs, no changes">
+              <span class="repo-name" translate="no">docs</span>
+              <span class="status-word">no changes</span>
             </div>
-            <div class="segmented" role="radiogroup" aria-label="Scope">
-              <label class="segment"><input type="radio" name="scope-working" value="uncommitted" checked><span>Current</span></label>
-              <label class="segment"><input type="radio" name="scope-working" value="staged"><span>Staged</span></label>
-              <label class="segment"><input type="radio" name="scope-working" value="commit"><span>Last commit</span></label>
-              <label class="segment"><input type="radio" name="scope-working" value="branch"><span>Branch</span></label>
-            </div>
-            <div class="segmented" role="radiogroup" aria-label="Untracked">
-              <label class="segment"><input type="radio" name="untracked-working" value="names" checked><span>Names</span></label>
-              <label class="segment"><input type="radio" name="untracked-working" value="content"><span>Content</span></label>
-            </div>
-            <button type="button" class="btn">Copy changes</button>
-          </div>
-        </details>
-        <label class="check head-check"><input type="checkbox" checked> Include in prompt</label>
-        </div>
-
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span class="when-open">Find files</span>
-            <span class="when-closed">Find · 38 files</span>
-          </summary>
-          <div class="fold-body">
-            <label class="inline-field"><span>Pattern</span><input id="pattern-working" type="text" value=".schema.ts,.spec.ts" spellcheck="false" autocomplete="off"></label>
-            <div class="contains-row inline-field">
-              <span class="label">Contains</span>
-              <input class="contains-input" id="contains-working" type="text" value="zod" spellcheck="false" autocomplete="off" aria-label="Contains">
-              <button type="button" class="regex-toggle" aria-pressed="false" aria-label="Regex">Regex</button>
-            </div>
-            <p class="count-line">38 files · ~12.4k tokens</p>
-            <div class="path-row"><span class="path" title="packages/billing/src/domain/invoice-payment.schema.ts">packages/billing/src/domain/invoice-payment.schema.ts</span></div>
-            <div class="split">
-              <button type="button" class="btn">Add</button>
-              <button type="button" class="btn">Replace</button>
-            </div>
-          </div>
-        </details>
-
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Output</span>
-            <span class="when-closed">· XML · 84k</span>
-          </summary>
-          <div class="fold-body">
-            <div class="segmented" role="radiogroup" aria-label="Format">
-              <label class="segment"><input type="radio" name="format-working" value="xml" checked><span>XML</span></label>
-              <label class="segment"><input type="radio" name="format-working" value="markdown"><span>MD</span></label>
-              <label class="segment"><input type="radio" name="format-working" value="plain"><span>Text</span></label>
-            </div>
-            <div class="checks">
-              <label class="check"><input type="checkbox" checked> Include tree</label>
-              <label class="check"><input type="checkbox"> Compact whitespace</label>
-            </div>
-            <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="64000" aria-valuenow="64000" aria-valuetext="84k of 64k tokens, 20k over budget: changes 31k, files 50k, tree 3k" title="84k of 64k tokens, 20k over budget: changes 31k, files 50k, tree 3k">
-              <div class="meter-track" aria-hidden="true">
-                <span class="seg seg-changes"></span>
-                <span class="seg seg-files"></span>
-                <span class="seg seg-tree"></span>
+            <div class="field">
+              <span>New files</span>
+              <div class="seg" role="radiogroup" aria-label="New files">
+                <label><input type="radio" name="new-u" checked><span>Names</span></label>
+                <label><input type="radio" name="new-u"><span>Content</span></label>
               </div>
-              <span class="budget-mark" aria-hidden="true"></span>
-            </div>
-            <ul class="meter-legend" aria-hidden="true">
-              <li><span class="swatch swatch-changes"></span> changes</li>
-              <li><span class="swatch swatch-files"></span> files</li>
-              <li><span class="swatch swatch-tree"></span> tree</li>
-            </ul>
-            <p class="meter-caption" aria-hidden="true">84k of 64k tokens, <span class="over-badge">20k over budget</span>: changes 31k, files 50k, tree 3k</p>
-            <button type="button" class="btn btn-primary">Copy</button>
-            <div class="split">
-              <button type="button" class="btn">Preview</button>
-              <button type="button" class="btn">Save as…</button>
             </div>
           </div>
         </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-    <footer class="statusbar">
-      <span>4 files · 84k tokens · XML</span>
-      <span>+ Git: 2 repos</span>
-    </footer>
-  </article>
+        <details class="section" open>
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <svg class="section-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5h5l3 3V13.5H4z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Files</span>
+            <span class="section-summary">4 files · 27k</span>
+            <button type="button" class="icon-btn add-btn" aria-label="Add files" aria-expanded="true" aria-controls="add-menu">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            </button>
+          </summary>
+          <div class="section-body">
+            <div class="menu" id="add-menu" role="menu">
+              <button type="button" role="menuitem">Choose in tree</button>
+            </div>
+            <div class="file">
+              <span class="path" title="packages/billing/src/domain" translate="no">packages/billing/src/domain</span>
+              <span class="count">3 · 22k</span>
+              <button type="button" class="text-btn" aria-label="Remove packages/billing/src/domain">Remove</button>
+            </div>
+            <div class="file">
+              <span class="path" title="packages/billing/src/domain/invoice-payment.schema.ts" translate="no">invoice-payment.schema.ts</span>
+              <span class="count">5k</span>
+              <button type="button" class="text-btn" aria-label="Remove invoice-payment.schema.ts">Remove</button>
+            </div>
+            <div class="left-out">
+              <span class="path" translate="no">pnpm-lock.yaml</span>
+              <span class="status-word">left out · generated</span>
+              <button type="button" class="text-btn">Add it anyway</button>
+            </div>
+          </div>
+        </details>
+        <details class="section">
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Optimize</span>
+            <span class="section-summary">Balanced</span>
+          </summary>
+        </details>
+        <details class="section">
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Output</span>
+            <span class="section-summary">XML</span>
+          </summary>
+        </details>
+        <footer class="footer">
+          <button type="button" class="btn-primary" id="copy-prompt-uncommitted" aria-keyshortcuts="Meta+Enter">Copy prompt&nbsp;⌘↵</button>
+          <button type="button" class="icon-btn" aria-label="Copy changes only"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5h6.5V13H5z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Preview"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.4-4 6.5-4 6.5 4 6.5 4-2.4 4-6.5 4S1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Save as…"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5.5 7 8 9.5 10.5 7M3.5 12.5h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        </footer>
+      </article>
+    </div>
 
-  <p class="note" data-shot="closed">Sections closed</p>
-  <article class="sidebar" id="closed" data-shot="closed" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold">
+    <div class="shot shot-commits">
+      <p>Commits</p>
+      <article class="panel" aria-label="Commits">
+        <header class="panel-head">
+          <h2 translate="no">PROMPTFOLD</h2>
+          <div class="icon-row">
+            <button type="button" class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.2-3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 2.5V6H9.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Selection history"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5.2V8l2 1.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.8v1.8M8 12.4v1.8M1.8 8h1.8M12.4 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          </div>
+        </header>
+        <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="64000" aria-valuenow="41000" aria-valuetext="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k" title="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k">
+          <div class="meter-top" aria-hidden="true"><span class="meter-count">41k / 64k tokens</span><span class="meter-saved">−9k optimized</span></div>
+          <div class="meter-track" aria-hidden="true"><span class="seg-changes"></span><span class="seg-files"></span><span class="seg-tree"></span><span class="seg-saved"></span></div>
+          <p class="legend" aria-hidden="true">changes 12k · files 27k · tree 2k</p>
+        </div>
+        <details class="section" open>
           <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-            <span class="when-closed">· 2 repos · Current</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <svg class="section-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9M4 8h5a2.5 2.5 0 0 0 0-5H4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Git</span>
+            <span class="section-summary">3 commits · Combined</span>
           </summary>
+          <div class="section-body">
+            <div class="seg" role="radiogroup" aria-label="Git mode">
+              <label><input type="radio" name="mode-c"><span>Uncommitted</span></label>
+              <label><input type="radio" name="mode-c" checked><span>Commits</span></label>
+              <label><input type="radio" name="mode-c"><span>Branch</span></label>
+            </div>
+            <label class="field">
+              <span>Repository</span>
+              <select id="commit-repo" aria-label="Repository"><option selected>api</option><option>web</option></select>
+            </label>
+            <label class="field">
+              <span class="visually-hidden">Filter commits</span>
+              <input id="commit-filter" type="search" name="commit-filter" placeholder="Message, hash, author…" spellcheck="false" autocomplete="off" aria-label="Message, hash, author">
+            </label>
+            <div class="latest-row">
+              <span>Latest</span>
+              <div class="latest" role="group" aria-label="Latest">
+                <button type="button" aria-pressed="false">1</button>
+                <button type="button" aria-pressed="true">3</button>
+                <button type="button" aria-pressed="false">5</button>
+                <button type="button" aria-pressed="false">10</button>
+              </div>
+              <button type="button" class="text-btn">Clear</button>
+            </div>
+            <div class="commit">
+              <input type="checkbox" checked aria-label="Include a1b2c3d Add invoice payment schema">
+              <div>
+                <div class="commit-line"><span class="hash" translate="no">a1b2c3d</span><span class="commit-msg">Add invoice payment schema</span></div>
+                <p class="meta">2 hours ago · 3 files · 4.2k</p>
+              </div>
+            </div>
+            <div class="commit">
+              <input type="checkbox" checked aria-label="Include b2c3d4e Cover the payment schema">
+              <div>
+                <div class="commit-line"><span class="hash" translate="no">b2c3d4e</span><span class="commit-msg">Cover the payment schema</span></div>
+                <p class="meta">yesterday · 2 files · 1.8k</p>
+              </div>
+            </div>
+            <div class="commit">
+              <input type="checkbox" checked aria-label="Include c3d4e5f Drop the unused fixture">
+              <div>
+                <div class="commit-line"><span class="hash" translate="no">c3d4e5f</span><span class="commit-msg">Drop the unused fixture</span></div>
+                <p class="meta">3 days ago · 3 files · 0.9k</p>
+              </div>
+            </div>
+            <div class="commit">
+              <input type="checkbox" aria-label="Include d4e5f6a Rename the billing helper">
+              <div>
+                <div class="commit-line"><span class="hash" translate="no">d4e5f6a</span><span class="commit-msg">Rename the billing helper</span></div>
+                <p class="meta">5 days ago · 1 file · ~0.4k</p>
+              </div>
+            </div>
+            <button type="button" class="linkish">Show older commits</button>
+            <p class="summary-line">3 commits · 8 files · +139 −27</p>
+            <div class="field">
+              <span>Diff</span>
+              <div class="seg" role="radiogroup" aria-label="Diff">
+                <label><input type="radio" name="diff-c" checked><span>Combined</span></label>
+                <label><input type="radio" name="diff-c"><span>Per commit</span></label>
+              </div>
+            </div>
+            <label class="check-row"><input type="checkbox" checked> Include commit messages</label>
+          </div>
         </details>
-        <details class="fold">
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span class="when-open">Find files</span>
-            <span class="when-closed">Find · 38 files</span>
-          </summary>
-        </details>
-        <details class="fold">
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Output</span>
-            <span class="when-closed">· XML · 84k</span>
-          </summary>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-    <footer class="statusbar">
-      <span>4 files · 84k tokens · XML</span>
-      <span>+ Git: 2 repos</span>
-    </footer>
-  </article>
+        <footer class="footer">
+          <button type="button" class="btn-primary" aria-keyshortcuts="Meta+Enter">Copy prompt&nbsp;⌘↵</button>
+          <button type="button" class="icon-btn" aria-label="Copy the selected commits only"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5h6.5V13H5z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Preview"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.4-4 6.5-4 6.5 4 6.5 4-2.4 4-6.5 4S1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Save as…"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5.5 7 8 9.5 10.5 7M3.5 12.5h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        </footer>
+      </article>
+    </div>
 
-  <p class="note" data-shot="branch">Branch against a base</p>
-  <article class="sidebar" id="branch" data-shot="branch" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
+    <div class="shot shot-optimize">
+      <p>Optimize</p>
+      <article class="panel" aria-label="Optimize">
+        <header class="panel-head">
+          <h2 translate="no">PROMPTFOLD</h2>
+          <div class="icon-row">
+            <button type="button" class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.2-3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 2.5V6H9.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Selection history"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5.2V8l2 1.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.8v1.8M8 12.4v1.8M1.8 8h1.8M12.4 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          </div>
+        </header>
+        <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="64000" aria-valuenow="41000" aria-valuetext="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k" title="41k of 64k tokens: changes 12k, files 27k, tree 2k. Optimizations saved 9k">
+          <div class="meter-top" aria-hidden="true"><span class="meter-count">41k / 64k tokens</span><span class="meter-saved">−9k optimized</span></div>
+          <div class="meter-track" aria-hidden="true"><span class="seg-changes"></span><span class="seg-files"></span><span class="seg-tree"></span><span class="seg-saved"></span></div>
+          <p class="legend" aria-hidden="true">changes 12k · files 27k · tree 2k</p>
+        </div>
+        <details class="section">
           <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-            <span class="when-closed">· 8 repos · Branch</span>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Git</span>
+            <span class="section-summary">2 repos · Uncommitted</span>
           </summary>
-          <div class="fold-body">
-            <label class="check"><input type="checkbox" checked> Include in prompt</label>
-            <p class="notice">More than 8 repositories in this workspace. The first 8 are marked.</p>
-            <div class="repo">
-              <input type="checkbox" checked aria-label="Include packages/billing-service/api">
-              <span class="repo-name truncate" title="packages/billing-service/api">packages/billing-service/api</span>
-              <span class="delta"><span class="visually-hidden">2 ahead, 0 behind</span><span aria-hidden="true">↑2 ↓0</span></span>
-              <span class="count">8 files</span>
+        </details>
+        <details class="section">
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Files</span>
+            <span class="section-summary">4 files · 27k</span>
+          </summary>
+        </details>
+        <details class="section" open>
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <svg class="section-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5h10M3 8h10M3 11h10" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Optimize</span>
+            <span class="section-summary">Balanced · −9k</span>
+          </summary>
+          <div class="section-body">
+            <div class="seg" role="radiogroup" aria-label="Preset" id="optimize-preset">
+              <label><input type="radio" name="preset-o"><span>Off</span></label>
+              <label><input type="radio" name="preset-o" checked><span>Balanced</span></label>
+              <label><input type="radio" name="preset-o"><span>Maximum</span></label>
             </div>
-            <div class="repo">
-              <input type="checkbox" checked aria-label="Include tools, detached at abc1234">
-              <span class="repo-name">tools</span>
-              <span class="branch" title="abc1234">abc1234</span>
-              <span class="status-word">detached</span>
+            <button type="button" class="switch" role="switch" aria-checked="true" aria-describedby="sw-ws"><span class="switch-label">Compact whitespace</span><span class="save">−1.2k</span><span class="switch-ui" aria-hidden="true"></span></button>
+            <p class="switch-desc" id="sw-ws">Collapse blank lines and trailing space.</p>
+            <button type="button" class="switch" role="switch" aria-checked="true" aria-describedby="sw-gen"><span class="switch-label">Generated files as names</span><span class="save">−0.8k</span><span class="switch-ui" aria-hidden="true"></span></button>
+            <p class="switch-desc" id="sw-gen">Copy a generated file that was added anyway as a name.</p>
+            <button type="button" class="switch" role="switch" aria-checked="false" aria-describedby="sw-comments"><span class="switch-label">Strip comments</span><span class="save">would save 6k</span><span class="switch-ui" aria-hidden="true"></span></button>
+            <p class="switch-desc" id="sw-comments">Drop comments from source files.</p>
+            <button type="button" class="switch" role="switch" aria-checked="true" aria-describedby="sw-logs"><span class="switch-label">Trim long logs</span><span class="save">−3.1k</span><span class="switch-ui" aria-hidden="true"></span></button>
+            <p class="switch-desc" id="sw-logs">Keep the first and last lines of a long log.</p>
+            <button type="button" class="switch" role="switch" aria-checked="false" aria-describedby="sw-outline"><span class="switch-label">Outline large files</span><span class="save">would save 8k</span><span class="switch-ui" aria-hidden="true"></span></button>
+            <p class="switch-desc" id="sw-outline">Replace a large file with its outline.</p>
+            <div class="field">
+              <span>Diff context</span>
+              <div class="seg" role="radiogroup" aria-label="Diff context">
+                <label><input type="radio" name="ctx-o" value="0"><span>0</span></label>
+                <label><input type="radio" name="ctx-o" value="1" checked><span>1</span></label>
+                <label><input type="radio" name="ctx-o" value="3"><span>3</span></label>
+              </div>
             </div>
-            <div class="repo">
-              <input type="checkbox" checked aria-label="Include notes, no upstream">
-              <span class="repo-name">notes</span>
-              <span class="status-word">No upstream</span>
-            </div>
-            <div class="segmented" role="radiogroup" aria-label="Scope">
-              <label class="segment"><input type="radio" name="scope-branch" value="uncommitted"><span>Current</span></label>
-              <label class="segment"><input type="radio" name="scope-branch" value="staged"><span>Staged</span></label>
-              <label class="segment"><input type="radio" name="scope-branch" value="commit"><span>Last commit</span></label>
-              <label class="segment"><input type="radio" name="scope-branch" value="branch" checked><span>Branch</span></label>
-            </div>
-            <label class="inline-field"><span>Filter</span><input id="filter-branch" type="search" value="panel" spellcheck="false" autocomplete="off" aria-label="Filter branches"></label>
-            <div role="radiogroup" aria-label="Base">
-              <label class="radio"><input type="radio" name="base-branch" value="upstream" checked><span class="truncate" title="origin/feature/panel">origin/feature/panel</span><span class="status-word">Upstream</span></label>
-              <label class="radio"><input type="radio" name="base-branch" value="dev"><span>dev</span></label>
-              <label class="radio"><input type="radio" name="base-branch" value="main"><span>main</span></label>
-              <label class="radio"><input type="radio" name="base-branch" value="feature/promptfold-panel-webview-states"><span class="truncate" title="feature/promptfold-panel-webview-states">feature/promptfold-panel-webview-states</span></label>
-            </div>
-            <p class="hint">Upstream does not apply to notes.</p>
+            <button type="button" class="linkish">See what was removed</button>
           </div>
         </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-    <footer class="statusbar">
-      <span>4 files · 84k tokens · XML</span>
-      <span>+ Git: 8 repos</span>
-    </footer>
-  </article>
+        <details class="section" open>
+          <summary>
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+            <span class="section-title">Output</span>
+            <span class="section-summary">XML</span>
+          </summary>
+          <div class="section-body">
+            <div class="seg" role="radiogroup" aria-label="Format">
+              <label><input type="radio" name="format-o" checked><span>XML</span></label>
+              <label><input type="radio" name="format-o"><span>Markdown</span></label>
+              <label><input type="radio" name="format-o"><span>Text</span></label>
+            </div>
+            <label class="check-row"><input type="checkbox" checked> Include folder tree</label>
+          </div>
+        </details>
+        <footer class="footer">
+          <button type="button" class="btn-primary" aria-keyshortcuts="Meta+Enter">Copy prompt&nbsp;⌘↵</button>
+          <button type="button" class="icon-btn" aria-label="Copy changes only"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5h6.5V13H5z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Preview"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.4-4 6.5-4 6.5 4 6.5 4-2.4 4-6.5 4S1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Save as…"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5.5 7 8 9.5 10.5 7M3.5 12.5h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        </footer>
+      </article>
+    </div>
 
-  <p class="note" data-shot="pending">Pending</p>
-  <article class="sidebar" id="pending" data-shot="pending" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-            <span class="when-closed">· updating</span>
-          </summary>
-          <div class="fold-body">
-            <div class="bones" aria-busy="true" aria-label="Updating Git repositories">
-              <span class="visually-hidden">Updating Git repositories</span>
-              <span class="bone bone-lg"></span>
-              <span class="bone bone-md"></span>
-              <span class="bone bone-sm"></span>
-            </div>
+    <div class="shot shot-empty">
+      <p>Empty</p>
+      <article class="panel" aria-label="Empty">
+        <header class="panel-head">
+          <h2 translate="no">PROMPTFOLD</h2>
+          <div class="icon-row">
+            <button type="button" class="icon-btn" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.2-3.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 2.5V6H9.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Selection history"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5.2V8l2 1.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button type="button" class="icon-btn" aria-label="Settings"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.8v1.8M8 12.4v1.8M1.8 8h1.8M12.4 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
           </div>
-        </details>
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Find files</span>
-            <span class="when-closed">· 0 files</span>
-          </summary>
-          <div class="fold-body">
-            <label class="inline-field"><span>Pattern</span><input type="text" value="*.nope" spellcheck="false" autocomplete="off"></label>
-            <p class="hint">No files match.</p>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
-  <article class="sidebar" data-shot="pending" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Find files</span>
-          </summary>
-          <div class="fold-body">
-            <label class="inline-field"><span>Pattern</span><input id="pattern-invalid" type="text" value="[" spellcheck="false" autocomplete="off" aria-invalid="true" aria-describedby="pattern-invalid-error"></label>
-            <p class="error" id="pattern-invalid-error">This pattern is not a valid glob.</p>
-            <div class="contains-row inline-field">
-              <span class="label">Contains</span>
-              <input class="contains-input" id="contains-invalid" type="text" value="(?=" spellcheck="false" autocomplete="off" aria-label="Contains" aria-invalid="true" aria-describedby="contains-invalid-error">
-              <button type="button" class="regex-toggle" aria-pressed="true" aria-label="Regex">Regex</button>
-            </div>
-            <p class="error" id="contains-invalid-error">This pattern is not a valid regular expression.</p>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
-
-  <p class="note" data-shot="snippets">Snippets and log</p>
-  <article class="sidebar" id="snippets" data-shot="snippets" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Snippets</span>
-            <span class="when-closed">· 2</span>
-          </summary>
-          <div class="fold-body">
-            <div class="repo">
-              <input type="checkbox" checked aria-label="Include storage/logs/laravel.log lines 120 to 186">
-              <span class="path" title="storage/logs/laravel.log:120-186">storage/logs/laravel.log:120-186</span>
-              <span class="count">~1.2k</span>
-            </div>
-            <div class="repo">
-              <input type="checkbox" disabled aria-label="app/Services/Stamp.php lines 40 to 52, file changed">
-              <span class="path" title="app/Services/Stamp.php:40-52">app/Services/Stamp.php:40-52</span>
-              <span class="status-word">File changed</span>
-            </div>
-          </div>
-        </details>
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Log</span>
-            <span class="when-closed">· 3 entries</span>
-          </summary>
-          <div class="fold-body">
-            <div class="segmented" role="radiogroup" aria-label="Level">
-              <label class="segment"><input type="radio" name="log-level" value="all"><span>All</span></label>
-              <label class="segment"><input type="radio" name="log-level" value="error" checked><span>Error</span></label>
-              <label class="segment"><input type="radio" name="log-level" value="warning"><span>Warning</span></label>
-            </div>
-            <div class="repo">
-              <input type="checkbox" checked aria-label="Include 10:23:45 error, CFDI40999 stamp rejected">
-              <span class="count">10:23:45</span>
-              <span class="repo-name">ERROR</span>
-              <span class="path" title="CFDI40999 stamp rejected">CFDI40999 stamp rejected</span>
-            </div>
-            <div class="repo">
-              <input type="checkbox" aria-label="Include 10:21:02 error, connection timed out while reading the PAC response">
-              <span class="count">10:21:02</span>
-              <span class="repo-name">ERROR</span>
-              <span class="path" title="Connection timed out while reading the PAC response">Connection timed out while reading the PAC response</span>
-            </div>
-            <p class="notice">3 identifiers can be redacted.</p>
-            <button type="button" class="btn">Last error</button>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
-
-  <p class="note" data-shot="empty">Empty Git</p>
-  <article class="sidebar" id="empty-git" data-shot="empty" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-          </summary>
-          <div class="fold-body">
-            <div class="empty">
-              <p>Git is not available in this window.</p>
-              <button type="button" class="btn btn-primary">Show Git extension</button>
-            </div>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
-  <article class="sidebar" id="empty-repos" data-shot="empty" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-          </summary>
-          <div class="fold-body">
-            <div class="empty">
-              <p>No Git repositories in this workspace.</p>
-              <button type="button" class="btn btn-primary">Initialize repository</button>
-            </div>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
-  <article class="sidebar" id="empty-folder" data-shot="empty" aria-label="Promptfold">
-    <h2 class="sidebar-title">Promptfold</h2>
-    <details open>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Prompt
-      </summary>
-      <div class="webview">
-        <details class="fold" open>
-          <summary>
-            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-            <span>Git</span>
-          </summary>
-          <div class="fold-body">
-            <div class="empty">
-              <p>Open a folder to build prompts from its files.</p>
-              <button type="button" class="btn btn-primary">Open folder</button>
-            </div>
-          </div>
-        </details>
-      </div>
-    </details>
-    <details>
-      <summary class="view-header">
-        <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg>
-        Files
-      </summary>
-    </details>
-  </article>
+        </header>
+        <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="64000" aria-valuenow="0" aria-valuetext="0 of 64k tokens: changes 0, files 0, tree 0" title="0 of 64k tokens: changes 0, files 0, tree 0">
+          <div class="meter-top" aria-hidden="true"><span class="meter-count">0 / 64k tokens</span></div>
+          <div class="meter-track" aria-hidden="true"></div>
+          <p class="legend" aria-hidden="true">changes 0 · files 0 · tree 0</p>
+        </div>
+        <div class="empty">
+          <p>Open a folder to build prompts from its files.</p>
+          <button type="button" class="text-btn" id="open-folder">Open folder</button>
+        </div>
+        <footer class="footer">
+          <button type="button" class="btn-primary" disabled aria-keyshortcuts="Meta+Enter">Copy prompt&nbsp;⌘↵</button>
+          <button type="button" class="icon-btn" aria-label="Copy changes only" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5h6.5V13H5z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Preview" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8s2.4-4 6.5-4 6.5 4 6.5 4-2.4 4-6.5 4S1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          <button type="button" class="icon-btn" aria-label="Save as…" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5.5 7 8 9.5 10.5 7M3.5 12.5h9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        </footer>
+      </article>
+    </div>
+  </div>
   <script>
+    const themes = {
+      dark: "vscode-dark",
+      light: "vscode-light",
+      hc: "vscode-high-contrast",
+      "hc-light": "vscode-high-contrast-light"
+    };
+
     const applyTheme = (theme) => {
-      document.documentElement.setAttribute("data-theme", theme);
+      const className = themes[theme] || themes.dark;
+      document.body.classList.remove(...Object.values(themes));
+      document.body.classList.add(className);
       document.querySelectorAll("[data-theme-choice]").forEach((item) => {
         item.setAttribute("aria-pressed", item.getAttribute("data-theme-choice") === theme ? "true" : "false");
       });
@@ -1030,32 +980,16 @@
       button.addEventListener("click", () => applyTheme(button.getAttribute("data-theme-choice")));
     });
 
-    document.querySelectorAll(".regex-toggle").forEach((button) => {
-      button.addEventListener("click", () => {
-        button.setAttribute("aria-pressed", button.getAttribute("aria-pressed") === "true" ? "false" : "true");
-      });
-    });
-
-    document.querySelectorAll('[role="radiogroup"]').forEach((group) => {
-      group.addEventListener("keydown", (event) => {
-        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "ArrowUp" && event.key !== "ArrowDown") {
-          return;
-        }
-        const radios = [...group.querySelectorAll('input[type="radio"]')];
-        const index = radios.indexOf(document.activeElement);
-        if (index < 0) return;
+    document.querySelectorAll(".add-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
         event.preventDefault();
-        const next = event.key === "ArrowLeft" || event.key === "ArrowUp"
-          ? (index - 1 + radios.length) % radios.length
-          : (index + 1) % radios.length;
-        radios[next].checked = true;
-        radios[next].focus();
+        event.stopPropagation();
       });
     });
 
     const params = new URLSearchParams(location.search);
     const theme = params.get("theme");
-    if (theme === "light" || theme === "dark") applyTheme(theme);
+    if (theme === "light" || theme === "dark" || theme === "hc" || theme === "hc-light") applyTheme(theme);
     const shot = params.get("shot");
     if (shot) document.body.setAttribute("data-shot", shot);
     const focusId = params.get("focus");
