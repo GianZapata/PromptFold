@@ -10,6 +10,10 @@ import {
   shouldRefreshSummary
 } from '../../domain/services/selection-budget.service';
 import {
+  SettingWriteTarget,
+  settingWriteTarget
+} from '../../domain/services/setting-write.service';
+import {
   estimateTokensFromBytes,
   formatTokenCount
 } from '../../domain/services/token-estimate.service';
@@ -104,13 +108,16 @@ export const createSelectionStatusBar = (
         return;
       }
 
-      await vscode.workspace
-        .getConfiguration('promptfold')
-        .update(
-          'outputFormat',
-          next.format,
-          vscode.ConfigurationTarget.Workspace
-        );
+      const config = vscode.workspace.getConfiguration('promptfold');
+      const target = settingWriteTarget(config.inspect('outputFormat'));
+
+      await config.update(
+        'outputFormat',
+        next.format,
+        target === SettingWriteTarget.Workspace
+          ? vscode.ConfigurationTarget.Workspace
+          : vscode.ConfigurationTarget.Global
+      );
 
       scheduleDescription();
     }
