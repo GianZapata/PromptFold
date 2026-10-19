@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Promptfold panel</title>
   <style>
-    /* Neutrals stand in for VS Code 1.125.0. Accent is brand indigo except in high contrast. */
+    /* Neutrals stand in for VS Code 1.107.0. Accent is brand indigo except in high contrast. */
     body.vscode-dark {
       color-scheme: dark;
       --vscode-sideBar-background: #181818;
@@ -86,6 +86,7 @@
       --pf-accent-deep: var(--vscode-contrastActiveBorder);
     }
 
+    body.vscode-high-contrast.vscode-high-contrast-light,
     body.vscode-high-contrast-light {
       color-scheme: light;
       --vscode-sideBar-background: #ffffff;
@@ -596,7 +597,7 @@
     }
   </style>
 </head>
-<body class="vscode-dark">
+<body class="vscode-dark" data-vscode-theme-kind="vscode-dark">
   <h1 class="visually-hidden">Promptfold panel</h1>
   <div class="review" role="group" aria-label="Theme">
     <p>Review chrome. Not part of the panel.</p>
@@ -960,17 +961,27 @@
     </div>
   </div>
   <script>
-    const themes = {
-      dark: "vscode-dark",
-      light: "vscode-light",
-      hc: "vscode-high-contrast",
-      "hc-light": "vscode-high-contrast-light"
-    };
+    const themeClasses = [
+      "vscode-light",
+      "vscode-dark",
+      "vscode-high-contrast",
+      "vscode-high-contrast-light"
+    ];
 
     const applyTheme = (theme) => {
-      const className = themes[theme] || themes.dark;
-      document.body.classList.remove(...Object.values(themes));
-      document.body.classList.add(className);
+      const kind = {
+        dark: "vscode-dark",
+        light: "vscode-light",
+        hc: "vscode-high-contrast",
+        "hc-light": "vscode-high-contrast-light"
+      }[theme] || "vscode-dark";
+
+      document.body.classList.remove(...themeClasses);
+      document.body.classList.add(kind);
+      if (kind === "vscode-high-contrast-light") {
+        document.body.classList.add("vscode-high-contrast");
+      }
+      document.body.dataset.vscodeThemeKind = kind;
       document.querySelectorAll("[data-theme-choice]").forEach((item) => {
         item.setAttribute("aria-pressed", item.getAttribute("data-theme-choice") === theme ? "true" : "false");
       });

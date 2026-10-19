@@ -2,7 +2,7 @@
 
 Vista webview de unos 300 px, con la densidad de Source Control, para decidir qué entra al prompt y copiarlo sin QuickPicks. 1.1 cubre Git (Uncommitted, Commits y Branch), Files, Optimize en el corte de 1.1, y Output, con paridad de `gcopy`. 1.2 agrega Find files por el `+` de Files, Strip comments y Log excerpt. El mockup está en `docs/plans/promptfold-panel-mockup.html`.
 
-Rama: `feature/promptfold-panel`, sobre `main` @ `8252822` (`docs: date 1.0.1 changelog`, v1.0.1). Este documento no autoriza edits en `src/`.
+Rama: `feature/promptfold-panel`, sobre `main` @ `f384a8a` (`chore: release 1.0.2`). El mínimo es VS Code 1.107.0: `engines.vscode` es `^1.107.0` y `@types/vscode` es exacto `1.107.0`. Este documento no autoriza edits en `src/`.
 
 `docs/` está en `.gitignore`. Estos dos archivos entran con `git add -f`, sin abrir el resto de `docs/`.
 
@@ -13,7 +13,7 @@ El panel es para quien copia contexto a un LLM decenas de veces al día desde la
 - Profundidad: solo bordes (`--vscode-widget-border`, `--vscode-sideBar-border`), sin sombras.
 - Medidas: fuente del usuario (`--vscode-font-size`; 13 px en el mockup), base de espaciado de 4 px, radio de 2 px. Controles interactivos de al menos 24 px de alto.
 - Tipografía: la del sistema con `--vscode-font-*`. Rutas en `--vscode-editor-font-family` y números con `tabular-nums`.
-Dirección D, ya elegida: encabezado, medidor siempre visible, secciones plegables y pie fijo. No hay una segunda composición.
+Dirección D, ya elegida: encabezado, medidor visible cuando hay presupuesto, secciones plegables y pie fijo. No hay una segunda composición.
 
 - Elemento propio: un medidor de tokens apilado (cambios, archivos y árbol) contra el presupuesto, con un tramo rayado para lo ahorrado.
 - Color: el acento es índigo de marca, no el botón de VS Code. En alto contraste el acento no se fuerza. Los neutros siguen `--vscode-*`. Los únicos colores de estado son los de `gitDecoration` y el warning.
@@ -23,7 +23,7 @@ Dirección D, ya elegida: encabezado, medidor siempre visible, secciones plegabl
 
 ### Alcances
 
-`GitScope` queda `Uncommitted | Commits | Branch`. Uncommitted junta index, working tree y untracked. Eso ya es lo que hace `changesForScope` cuando el alcance es `uncommitted` (`src/domain/services/git-changes.service.ts`). Staged desaparece. "Last commit" pasa a ser Commits con Latest 1.
+`GitScope` queda `Uncommitted | Commits | Branch`. Uncommitted junta index, working tree, untracked y merge, deduplicados por repo y ruta. 1.0.2 ya lee `untrackedChanges` y `mergeChanges`, y mapea los estados 12–18 a `modified`. El panel reutiliza eso. No se vuelve a implementar. `hidden` se respeta: si la API no trae el archivo nuevo, el panel no lo inventa. Staged desaparece. "Last commit" pasa a ser Commits con Latest 1.
 
 Se borran `GitScope.Staged` y `GitScope.Commit` (`src/domain/entities/git-scope.enum.ts`), `gitScopeMenu`, la rama staged de `changesForScope` y de `fillChangeDiff` (`src/domain/services/git-diff.service.ts`), y los valores `staged` y `commit` como `presetScope` de `promptfold.selectChanges`. El CHANGELOG de 1.1 lo anota en Removed. La frase "el valor de scope se conserva" deja de ser cierta.
 
@@ -79,9 +79,16 @@ Commits. Entra en 1.1, no en 1.2.
 - `Diff: Combined | Per commit` y casilla `Include commit messages`.
 - La selección es por repo y se conserva al cambiar de repo.
 
-Consecutividad. Ordenados de nuevo a viejo, cada commit marcado tiene como `parents[0]` al siguiente marcado. Un solo commit es consecutivo. Combined llama a `diffBetween` con el `parents[0]` del más viejo, o `EMPTY_TREE` si es la raíz (`src/domain/services/git-diff.service.ts`), y el más nuevo. En Per commit, un merge se compara contra `parents[0]`. Si no son consecutivos, el modo efectivo es Per commit y una línea avisa: `Combined needs consecutive commits`.
+Consecutividad. Ordenados de nuevo a viejo, cada commit marcado tiene como `parents[0]` al siguiente marcado. Un solo commit es consecutivo. Si no lo son, el modo efectivo es Per commit y una línea avisa: `Combined needs consecutive commits`. En Per commit, un merge se compara contra `parents[0]`.
 
-Hoy `parentOf` pide `getCommit(\`${hash}~1\`)` en `src/infrastructure/datasources/vscode-git.datasource.ts`. Pasa a leer `Commit.parents[0]`. La raíz sigue en `EMPTY_TREE`.
+Combined no pasa `EMPTY_TREE` a `diffBetween`. En el tag 1.107.0, `extensions/git/src/git.ts` línea 1692 arma `` `${ref1}...${ref2}` ``. El objeto vacío es un árbol, no un commit, y el rango de tres puntos falla. Issue #13.
+
+- Con padre: `diffBetween(parents[0] del más viejo, el más nuevo)`.
+- Sin padre: comparación directa de árboles, `diffBlobs(EMPTY_TREE, el más nuevo)`, y `show` para el contenido por archivo cuando haga falta. Es el fallback que `listCommitChanges` ya usa para un commit raíz. No se reemplaza por `diffBetween`.
+- `EMPTY_TREE` puede quedar como metadato `from` en la salida. Eso no autoriza pasarlo a `diffBetween`.
+- `diffBetweenPatch` no existe en `git.d.ts` de 1.107.0. No se usa.
+
+Hoy `parentOf` pide `getCommit(\`${hash}~1\`)` en `src/infrastructure/datasources/vscode-git.datasource.ts`. Pasa a leer `Commit.parents[0]`. Si `parents` está vacío, es raíz.
 
 Branch: base a comparar, con filtro. Upstream, dev y main primero, después el resto, como `git/list-base-branches`.
 
@@ -117,11 +124,13 @@ Preset calculado, para que el segmento tenga una definición:
 - Maximum: los interruptores que ya existen en la fase encendidos y `diffContext` 0.
 - Cualquier otra combinación no marca segmento.
 
+El segmento y el ahorro se comprueban contra el texto generado y los tokens medidos. Escribir el setting no basta. Copy, Preview y Save aplican la misma compactación.
+
 `See what was removed` abre un Preview con lo que se quitó. No copia.
 
 ### Diff context
 
-`extensions/git/src/api/git.d.ts` del tag `1.125.0` no tiene argumento de contexto. `diff` (línea 267), `diffBetween` (líneas 279-280) y `diffBetweenPatch` (línea 281) no reciben `-U`. `show` (línea 257) sí devuelve el texto de un blob. `Git.path` (línea 10) existe, pero Promptfold no lanza `git`.
+`extensions/git/src/api/git.d.ts` del tag `1.107.0` no tiene argumento de contexto. `diff` (línea 237) y `diffBetween` (líneas 249-250) no reciben `-U`. `diffBetweenPatch` no está en ese archivo. `show` (línea 229) sí devuelve el texto de un blob. Promptfold no lanza `git`.
 
 Tres opciones:
 
@@ -133,12 +142,13 @@ Recomendación: la 1, en 1.1. Costo: una función pura y tests del encabezado `@
 
 ### API de Git
 
-Fuente: `extensions/git/src/api/git.d.ts` del tag `1.125.0`, la versión de `engines`. No se cita `main`.
+Fuente: tag `1.107.0`, la versión de `engines`. No se cita `main` de VS Code.
 
-- `Repository.log` está en la línea 316. `LogOptions` (líneas 160-173) tiene `maxEntries` (default 32, línea 161), `range` (línea 165), `shortStats` (línea 168), `author` (línea 169), `grep` (línea 170) y `skip` (línea 173). Se pagina con `skip`. `range` no hace falta para la página.
+- `Repository.log` está en `git.d.ts` línea 283. `LogOptions` (líneas 139-152) tiene `maxEntries` (default 32, línea 141), `shortStats` (línea 147), `author` (línea 148), `grep` (línea 149) y `skip` (línea 152). Se pagina con `skip`.
 - El filtro de mensaje usa `grep`. El de autor usa `author`. El hash se filtra sobre lo ya cargado. No se lanza un proceso.
 - `Commit.parents` es `readonly parents: string[]` (línea 58). `shortStat` es opcional (línea 63).
-- El padre sale de `parents[0]`. La raíz usa `EMPTY_TREE`.
+- El padre sale de `parents[0]`. Si no hay padre, la comparación directa usa `diffBlobs`, no `diffBetween`.
+- `vscode.l10n.t` está en `src/vscode-dts/vscode.d.ts` línea 18122. `Webview` está en la línea 9917. Los textos del panel salen por `l10n.t`.
 
 La fecha relativa y los números los formatea el host con `Intl` y `vscode.env.language`. La webview no arma fechas.
 
@@ -206,7 +216,7 @@ Casos de uso nuevos en `src/domain/use-cases/`:
 | `git/list-base-branches` | Upstream, dev y main primero, después el resto. Extiende `baseChoices`. |
 | `git/list-commits` | Página de un repo. `repository.log({ maxEntries, skip, shortStats: true, grep, author })`. `Show older commits` sube `skip`. El hash se filtra en la página cargada. |
 | `git/collect-changes` | Uncommitted y Branch. Recibe repos, exclusiones por archivo, base y `promptfold.untrackedContent`. No abre QuickPick. |
-| `git/collect-commits` | Combined o Per commit, consecutividad, mensajes. Combined llama a `diffBetween(parents[0] del más viejo o EMPTY_TREE, el más nuevo)`. |
+| `git/collect-commits` | Combined o Per commit, consecutividad, mensajes. Con padre: `diffBetween(padre del más viejo, el más nuevo)`. Sin padre: `diffBlobs(EMPTY_TREE, el más nuevo)`. Nunca `diffBetween(EMPTY_TREE, …)`. |
 | `prompt/optimize` | Transformaciones puras. Cada una devuelve el texto y el ahorro (`tokensBefore - tokensAfter`). |
 | `prompt/summarize-selection` | Alimenta el medidor y la barra de estado. |
 | `files/find-files` | Pattern y Contains. 1.2, disparado por el `+` de Files. |
@@ -311,7 +321,7 @@ Fuente `src/webview/panel/panel.css`, sin Preflight:
 - `--color-*: initial` borra la paleta por defecto. Tailwind v4 lo documenta así. Después del reset solo existen los tokens declarados, así que `bg-blue-500` no genera nada. Los neutros siguen en `--vscode-*`. Los únicos tokens nuevos son los `accent`, y apuntan a `--pf-accent*`.
 - El botón primario usa `bg-accent` y `text-accent-fg`. No usa `--color-button`.
 
-Los valores de `--pf-accent*` viven en el `body`, porque el claro y el alto contraste no caben en un solo `@theme`. El tema se detecta por las clases que VS Code pone en el body del webview. Context7 documenta `vscode-light`, `vscode-dark`, `vscode-high-contrast` y el atributo `data-vscode-theme-id`. No documenta `data-vscode-theme-kind`. El fuente de `1.125.0`, `src/vs/workbench/contrib/webview/browser/themeing.ts`, agrega una cuarta clase: `vscode-high-contrast-light`. El plan usa las cuatro. No usa `data-vscode-theme-kind`.
+Los valores de `--pf-accent*` viven en el `body`, porque el claro y el alto contraste no caben en un solo `@theme`. La referencia es `src/vs/workbench/contrib/webview/browser/pre/index.html` del tag `1.107.0`, función `applyStyles` (línea 510). Al cambiar de tema quita `vscode-light`, `vscode-dark`, `vscode-high-contrast` y `vscode-high-contrast-light` (línea 516). Si el tema activo es `vscode-high-contrast-light`, agrega esa clase y también `vscode-high-contrast` (líneas 520-522). Escribe `body.dataset.vscodeThemeKind`, que expone `data-vscode-theme-kind` (línea 534). El mockup tiene que reproducir las dos clases y el atributo. Issue #14.
 
 Oscuro, `body.vscode-dark`. Sidebar `#181818`.
 
@@ -335,11 +345,11 @@ Claro, `body.vscode-light`. Sidebar `#F8F8F8`. `#A3A3F7` sobre ese fondo da 2.16
 | `--pf-accent-soft` | `#3C3C9A` | 8.58:1 |
 | `--pf-accent-deep` | `#2F2F86` | 10.56:1 |
 
-Alto contraste, `body.vscode-high-contrast` y `body.vscode-high-contrast-light`. El índigo no se fuerza. `--pf-accent` y `--pf-accent-hover` apuntan a `--vscode-button-background` y `--vscode-button-hoverBackground`. `--pf-accent-fg` apunta a `--vscode-button-foreground`. El texto y el medidor apuntan a `--vscode-contrastActiveBorder`. El foco también usa ese borde. El contraste lo garantiza el tema, no un hex de marca.
+Alto contraste oscuro: solo `body.vscode-high-contrast`. Alto contraste claro: `body.vscode-high-contrast` y `body.vscode-high-contrast-light` a la vez. El índigo no se fuerza. `--pf-accent` y `--pf-accent-hover` apuntan a `--vscode-button-background` y `--vscode-button-hoverBackground`. `--pf-accent-fg` apunta a `--vscode-button-foreground`. El texto y el medidor apuntan a `--vscode-contrastActiveBorder`. El foco también usa ese borde. Las reglas del claro van después de las compartidas, o usan el selector `body.vscode-high-contrast.vscode-high-contrast-light`, para que ganen cuando las dos clases están presentes.
 - `--text-*: initial` deja solo `text-ui`, que sigue el tamaño de fuente del usuario, y `text-meta`, un 92 % para ramas, contadores y rutas secundarias. Cada uno tiene su line-height. Ninguna clase del panel usa `rem`.
 - El test de clases literales rechaza valores arbitrarios con `rem`, como `text-[0.8rem]` o `p-[1rem]`.
 - El paso de CI que valida `media/panel.css` falla si el CSS generado contiene `rem`.
-- Alto contraste usa `--vscode-contrastBorder` y `--vscode-contrastActiveBorder` dentro del mismo `@theme`. En Dark Modern y Light Modern esos tokens son null en el color registry de VS Code 1.125.0.
+- Alto contraste usa `--vscode-contrastBorder` y `--vscode-contrastActiveBorder` dentro del mismo `@theme`. En Dark Modern y Light Modern esos tokens son null en el color registry de VS Code 1.107.0.
 
 `panel-html.ts` tiene su propio `@source` porque el host lo compila aparte del árbol DOM. El test de clases literales cubre `src/webview/**/*.ts` y también `src/presentation/panel/panel-html.ts`.
 
@@ -529,7 +539,7 @@ XML, Per commit. Cada `<commit>` lleva `<message>` en CDATA si `Include commit m
 </commits>
 ```
 
-XML, Combined. Un `<changes scope="commits" from to>`. `from` es `parents[0]` del más viejo, o `EMPTY_TREE` si es la raíz. `to` es el más nuevo. Con mensajes, antes del diff va `<messages>`.
+XML, Combined. Un `<changes scope="commits" from to>`. `to` es el más nuevo. `from` es `parents[0]` del más viejo cuando existe. Si el más viejo es raíz, `from` puede ser el hash de `EMPTY_TREE` como metadato. El diff de ese caso no sale de `diffBetween`: sale de `diffBlobs(EMPTY_TREE, to)`. Con mensajes, antes del diff va `<messages>`.
 
 ```xml
 <commits repo="api" mode="combined">
@@ -573,11 +583,11 @@ Sin mensajes, no se escribe `<message>` ni `<messages>`. El hash se queda.
 - Repo sin upstream: no hay ahead/behind y la opción Upstream no aplica.
 - Detached HEAD: se muestra el commit corto. Repo sin commits: el modo Commits muestra `No commits in this repository.`
 - Combined sobre commits no consecutivos cae a Per commit y muestra `Combined needs consecutive commits`.
-- `git.d.ts` no dice si `diffBetween` es de dos o de tres puntos. El plan llama a `diffBetween` como se pidió. El test del rango fija el from y el to que se pasan, no el texto interno de Git.
+- `diffBetween` en 1.107.0 arma tres puntos (`git.ts` línea 1692). Pasarle `EMPTY_TREE` falla: el objeto es un árbol, no un commit. El test tiene que usar Git real, no un mock que solo registre `from` y `to`.
 - Diff context 10 no se ofrece. Un hunk mal recortado cambia el parche: el test fija el `@@`.
 - Si un repo no tiene la base elegida, su fila lo dice y se omite de `collect-changes`.
 - Windows: rutas POSIX, raíces sin distinguir mayúsculas, CRLF y la ruta del worker vía `__dirname`.
-- Cursor: hay que verificar que su versión base cumpla `engines.vscode` `^1.125.0`. También su choque de atajos.
+- Cursor y Antigravity: hay que verificar que su base cumpla `engines.vscode` `^1.107.0`. También el choque de atajos. Antigravity en Windows sigue pendiente de prueba manual (issue #9).
 - Rendimiento en un workspace grande: el índice se recorre una vez y se invalida con FileSystemWatcher con debounce. El pattern se resuelve en memoria. Contains va en el worker con progreso y tope en `maxFiles`. La lista de ramas se pide solo cuando se abre Branch. El marcado inicial se detiene en `promptfold.repositoryMarkLimit` (8).
 - Los snapshots viejos con `promptChanges` se ignoran al restaurar el historial.
 - Multi-root sigue con `workspaceFolders[0]`.
@@ -600,7 +610,11 @@ Unit con `node:test` (`npm run test:unit`):
   - `summarizeSelection` y `selectionStatus` con selección y sin ella. Con repos: `+ Git: 3 repos`. Con commits: `+ Git: 3 commits`. Sin selección: no hay sufijo y changes es 0.
   - `aria-valuetext` del medidor, dentro y fuera de presupuesto, con `Optimizations saved 9k` solo si el ahorro es mayor que 0, y `tokenBudget = 0` sin `role="meter"`.
   - Consecutividad: una cadena permite Combined. Un hueco lo impide y deja `Combined needs consecutive commits`.
-  - Combined llama a `diffBetween` con el padre del más viejo, o `EMPTY_TREE`, y el más nuevo. Per commit escribe un `<commit hash>` por commit. Sin mensajes, no hay `<message>`.
+  - Combined con padre llama a `diffBetween(padre del más viejo, el más nuevo)` y no pasa `EMPTY_TREE`. Combined que incluye la raíz usa `diffBlobs(EMPTY_TREE, el más nuevo)`. Un mock que solo registre `from` y `to` no basta: el test aplica el resultado con Git real. Per commit escribe un `<commit hash>` por commit. Sin mensajes, no hay `<message>`.
+  - Presets y ahorro se afirman contra el texto generado y los tokens medidos, no solo contra el write del setting. Copy, Preview y Save usan la misma compactación.
+  - Issue #10: el archivo nuevo llega a la salida serializada, y un archivo staged que se edita después aparece una vez con el contenido combinado.
+  - Issue #11: un archivo que solo está en `mergeChanges` entra, y un conflicto de borrado no se pierde ni se trata como archivo vacío leído con éxito.
+  - Issue #12 bloquea aceptar la salida de `newFileDiff` y del fallback de commit raíz hasta corregir saltos finales y el parche de archivo vacío. Este plan no lo implementa.
   - Diff context 3 no altera el parche. 1 y 0 recortan contexto y reescriben `@@`. No existe 10.
   - El token de una fila sin marcar sale de `shortStat` y lleva `~`. Al marcar, sale del diff y no lleva `~`.
   - El preset se calcula. Una combinación que no es Off, Balanced ni Maximum no marca segmento.
@@ -620,39 +634,43 @@ Integración con Mocha (`npm run test:vscode`):
 
 Playwright: `@playwright/test` como devDependency con versión exacta. Corre sobre el HTML que renderiza `panel-html.ts`, con `acquireVsCodeApi` simulado por `addInitScript`. Job nuevo en `.github/workflows/test.yml`, ubuntu.
 
-- 1.1, secciones Git y Output: flujo solo con teclado; radiogroups con flechas; anuncios `aria-live`; repo limpio desactivado; estados vacíos con su acción; presupuesto superado y `aria-valuetext` del meter; atajos en inputs; temas claro, oscuro y alto contraste a 300 px.
+- 1.1, secciones Git, Files, Optimize y Output: flujo solo con teclado; radiogroups con flechas; interruptores `role="switch"`; anuncios `aria-live`; repo sin cambios desactivado; estados vacíos con su acción; presupuesto superado y `aria-valuetext` del meter; atajos en inputs. A 300 px, un caso de alto contraste claro pone a la vez `vscode-high-contrast` y `vscode-high-contrast-light`, más `data-vscode-theme-kind="vscode-high-contrast-light"`, y comprueba color de texto, fondo, acento y foco calculados. El mockup no cuenta como esa prueba.
 - 1.2: la sección Find files.
 
-Checklist manual antes de publicar 1.1, en VS Code stable y en Cursor:
+Checklist manual antes de publicar 1.1, en VS Code stable, en Cursor y en Antigravity. Antigravity se instala desde Open VSX y también desde el VSIX. Issue #9: el smoke actual solo instala en stable, y la prueba manual en Antigravity sobre Windows sigue pendiente. El mockup no la sustituye.
 
+- Instalación y activación.
 - Atajos con el foco en un input: Mod+Enter, Mod+Shift+Enter y Mod+C.
 - La vista aparece encima de Files.
-- Los tres temas.
+- Temas claro, oscuro, alto contraste y alto contraste claro.
 - El atajo global no choca con nada.
-- La versión base de Cursor cumple `engines`.
+- La versión base cumple `engines.vscode` `^1.107.0`.
 
 ## Orden de commits
 
-1.1 del panel, Dirección D, con paridad con `gcopy`. Cada commit deja tests verdes de lo que ya existe. Tailwind y el panel no van en el mismo commit. El primero saca los pickers del data source. Snippets y logs siguen en su lista: 3 commits de 1.1 que no dependen del panel. El panel son 16.
+1.1 es una sola secuencia de 19 commits. Incluye los tres de Snippets y logs que antes iban aparte. La serialización de rangos, Copy selection as prompt y la compactación de logs existen antes de medir optimizaciones y antes de exponer Optimize. Tailwind sigue en su propio commit. El primero saca los pickers del data source. Esta lista no se ejecuta en este ajuste.
 
 1. `refactor: keep Git pickers out of the data source`
-2. `refactor: drop staged and last-commit scopes`
-3. `feat: read commit parents from the Git API`
-4. `feat: describe repositories from the Git API`
-5. `feat: list commits through the Git API`
-6. `feat: collect uncommitted changes and commit diffs`
-7. `feat: add repository and commit headers to the prompt output`
-8. `feat: measure prompt optimizations`
-9. `refactor: stop Git from ticking files in the tree`
-10. `refactor: remove the Git changes view`
-11. `build: generate the panel CSS with Tailwind` — CLI exacto, script, `compile`, `.gitignore`, pasos de CI, test de clases literales y regla en `CONTRIBUTING.md`.
-12. `feat: add the Promptfold panel shell and token meter`
-13. `feat: add Git, Files, and Optimize to the panel`
-14. `feat: drive copy, preview, and shortcuts from the panel`
-15. `test: cover the panel with Playwright`
-16. `docs: document the panel for 1.1`
+2. `feat: format editor selections with path and line range`
+3. `feat: copy the editor selection as a prompt`
+4. `feat: compact logs before they enter the prompt`
+5. `refactor: drop staged and last-commit scopes`
+6. `feat: read commit parents from the Git API`
+7. `feat: describe repositories from the Git API`
+8. `feat: list commits through the Git API`
+9. `feat: collect uncommitted changes and commit diffs`
+10. `feat: add repository and commit headers to the prompt output`
+11. `feat: measure prompt optimizations`
+12. `refactor: stop Git from ticking files in the tree`
+13. `refactor: remove the Git changes view`
+14. `build: generate the panel CSS with Tailwind` — CLI exacto, script, `compile`, `.gitignore`, pasos de CI, test de clases literales y regla en `CONTRIBUTING.md`.
+15. `feat: add the Promptfold panel shell and token meter`
+16. `feat: add Git, Files, and Optimize to the panel`
+17. `feat: drive copy, preview, and shortcuts from the panel`
+18. `test: cover the panel with Playwright`
+19. `docs: document the panel for 1.1`
 
-La entrada de CHANGELOG de 1.1 va en el commit 16.
+La entrada de CHANGELOG de 1.1 va en el commit 19. El commit 4 deja `promptfold.compactLogs` aplicado al texto del prompt. El commit 11 mide ese ahorro. El commit 16 solo expone el interruptor cuando ese comportamiento ya existe.
 
 ```markdown
 ## [1.1.0] - Unreleased
@@ -660,6 +678,7 @@ La entrada de CHANGELOG de 1.1 va en el commit 16.
 ### Added
 
 - Promptfold panel in the sidebar, with live Git modes, the file selection, Optimize, and the output controls.
+- Log compaction for `.log` files, controlled by `promptfold.compactLogs`. Optimize can only offer Trim long logs after that behavior exists.
 
 ### Changed
 
@@ -716,7 +735,7 @@ Estados que el panel cubre aunque el mockup dibuje uno:
 
 `docs/plans/promptfold-panel-mockup.html` es estático y autocontenido: CSS y JS inline, sin recursos remotos y sin Tailwind. Sin `rem`. Los hex de neutros viven en `--vscode-*`. Los hex de acento viven en `--pf-accent*` solo fuera de alto contraste.
 
-El tema no usa `data-theme`. El `body` lleva las clases del webview: `vscode-dark`, `vscode-light`, `vscode-high-contrast` o `vscode-high-contrast-light`. Playwright prueba esos selectores.
+El tema no usa `data-theme` como contrato del webview. El `body` usa las clases de `applyStyles` en 1.107.0. Alto contraste claro lleva `vscode-high-contrast-light` y `vscode-high-contrast`, y `data-vscode-theme-kind="vscode-high-contrast-light"`. Al cambiar de tema se quitan las clases anteriores. Playwright del producto comprueba los estilos calculados con las dos clases; abrir este HTML no cuenta como esa prueba.
 
 Se conservan `?shot=`, `?theme=` y `?focus=`. `theme` acepta `dark`, `light`, `hc` y `hc-light`. `shot` acepta `uncommitted`, `commits`, `optimize` y `empty`. `focus` enfoca el id.
 
@@ -728,7 +747,7 @@ El medidor usa `role="meter"` y el `aria-valuetext` de dentro de presupuesto. `a
 
 Copiar un `laravel.log` entero no cabe en el presupuesto. Copiarlo a mano pierde la ruta y las líneas. El caso es una entrada con un código CFDI y un XML dentro: el prompt debe llevar el error, los frames de `app/` y el XML, sin blobs ni el archivo completo.
 
-1.1 no depende del panel y puede mergearse antes. 1.2 vive en el panel. El camino masivo no cambia: un archivo sensible sigue sin entrar al prompt salvo esta acción explícita, y solo después de confirmar.
+Los tres commits de 1.1 de esta pista van en la secuencia única, antes de medir optimizaciones y de exponer Optimize. Pueden mergearse antes de la UI del panel, pero el comportamiento de `compactLogs` tiene que existir antes del interruptor. 1.2 vive en el panel. El camino masivo no cambia: un archivo sensible sigue sin entrar al prompt salvo esta acción explícita, y solo después de confirmar.
 
 ### 1. Copy selection as prompt
 
@@ -876,20 +895,16 @@ Riesgos que cruzan los cinco puntos: no leer un log de cientos de MB entero; no 
 
 ### Orden de commits
 
-1.1, independiente del panel:
-
-1. `feat: format editor selections with path and line range`
-2. `feat: copy the editor selection as a prompt`
-3. `feat: compact logs before they enter the prompt`
+Los tres commits de 1.1 de esta pista están en la secuencia única, como 2, 3 y 4, antes de medir optimizaciones. No se repiten aquí.
 
 1.2, con el panel:
 
-4. `feat: add selections to the prompt as snippets`
-5. `feat: list recent log entries from the file tail`
-6. `feat: redact identifiers in logs before copying`
-7. `docs: document snippets, logs, and the FAQ`
+1. `feat: add selections to the prompt as snippets`
+2. `feat: list recent log entries from the file tail`
+3. `feat: redact identifiers in logs before copying`
+4. `docs: document snippets, logs, and the FAQ`
 
-El commit 7 agrega las dos FAQ al README: ".DS_Store and other OS files" (ya excluidos; `.promptignore` funciona sin git; issue #17) y "Does Promptfold apply the model's reply? No, by design" (copiar es el flujo; sin red ni API keys). No se escriben en este plan.
+El commit 4 de 1.2 agrega las dos FAQ al README: ".DS_Store and other OS files" (ya excluidos; `.promptignore` funciona sin git; issue #17) y "Does Promptfold apply the model's reply? No, by design" (copiar es el flujo; sin red ni API keys). No se escriben en este plan.
 
 ### Mockup
 
