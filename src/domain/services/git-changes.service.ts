@@ -109,6 +109,14 @@ export const changeStatusLabel = (status: string) => {
   return 'Modified';
 };
 
+export const reposWithoutIncludableFiles = (
+  repos: Array<{ name: string; wanted: string[] }>,
+  checked: ReadonlySet<string>
+) =>
+  repos
+    .filter(repo => repo.wanted.every(filePath => !checked.has(filePath)))
+    .map(repo => repo.name);
+
 export const pathsToCheck = (changes: PromptChange[]) =>
   changes
     .filter(

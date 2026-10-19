@@ -43,7 +43,10 @@ const BUILT_ELSEWHERE = [
   'Plain text',
   'Reveal in Finder',
   'Reveal in File Explorer',
-  'Reveal in file manager'
+  'Reveal in file manager',
+  'generated · included manually',
+  'generated · left out of bulk selection',
+  'No changes to include in {0}.'
 ];
 
 const sourceFiles = (directory: string): string[] =>

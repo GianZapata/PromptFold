@@ -651,11 +651,11 @@ export const registerPromptCommands = (
         format
       });
 
-      const previewUri = vscode.Uri.parse(deps.previewSource.uriFor(format)).with(
-        {
-          query: `v=${++previewVersion}`
-        }
-      );
+      const previewUri = vscode.Uri.parse(
+        deps.previewSource.uriFor(format)
+      ).with({
+        query: `v=${++previewVersion}`
+      });
 
       deps.previewSource.set(previewUri.toString(), summary.output);
       deps.previewEmitter.fire(previewUri);

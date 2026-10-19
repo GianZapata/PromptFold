@@ -34,6 +34,8 @@ import {
 } from '../../infrastructure/filesystem/select-files.walker';
 import { createIgnoreResolver } from '../../infrastructure/ignore/ignore-resolver.service';
 
+import { generatedFileDescription } from './generated-file-description';
+
 export class FileTreeProvider
   implements vscode.TreeDataProvider<FileItem>, vscode.Disposable
 {
@@ -488,7 +490,9 @@ export class FileTreeProvider
         item.description = vscode.l10n.t('ignored · included manually');
       } else if (isGenerated) {
         item.description = vscode.l10n.t(
-          'generated · left out of bulk selection'
+          generatedFileDescription(
+            checkboxState === vscode.TreeItemCheckboxState.Checked
+          )
         );
       }
 

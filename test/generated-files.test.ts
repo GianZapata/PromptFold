@@ -44,7 +44,8 @@ const GENERATED_PATHS = [
   ...GENERATED_NAMES.map(name => `packages/web/${name}`),
   'public/app.min.js',
   'public/app.min.css',
-  'assets/app.js.map'
+  'assets/app.js.map',
+  'src/app.tsbuildinfo'
 ];
 
 const NEIGHBOURS = [
@@ -91,9 +92,15 @@ const repositoryFor = (workspace: string, includeGenerated = false) => {
 };
 
 test('the pattern list names every lockfile and generated asset', () => {
-  assert.equal(generatedPatterns.length, 18);
+  assert.equal(generatedPatterns.length, 19);
 
-  for (const name of [...GENERATED_NAMES, '*.min.js', '*.min.css', '*.map']) {
+  for (const name of [
+    ...GENERATED_NAMES,
+    '*.min.js',
+    '*.min.css',
+    '*.map',
+    '*.tsbuildinfo'
+  ]) {
     assert.ok(generatedPatterns.includes(name), name);
   }
 });

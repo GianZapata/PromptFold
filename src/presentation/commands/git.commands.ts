@@ -18,10 +18,13 @@ import {
 import {
   applyChangeSelection,
   gitScopeMenu,
-  mergeChanges
+  mergeChanges,
+  pathsToCheck,
+  reposWithoutIncludableFiles
 } from '../../domain/services/git-changes.service';
 import {
   gitUnavailableMessage,
+  noChangesToIncludeMessage,
   noRepositoriesMessage,
   repositoriesForTarget
 } from '../../domain/services/git-repos.service';
@@ -242,6 +245,7 @@ export const registerGitCommands = (
         }
 
         const changes: PromptChange[] = [];
+        const perRepo: Array<{ name: string; wanted: string[] }> = [];
 
         for (const repo of selectedRepos) {
           const collected = await deps.getGitChanges.execute({
@@ -251,6 +255,10 @@ export const registerGitCommands = (
           });
 
           changes.push(...collected);
+          perRepo.push({
+            name: repo.relativePath || path.basename(deps.workspaceRoot),
+            wanted: pathsToCheck(collected)
+          });
         }
 
         if (
@@ -292,6 +300,23 @@ export const registerGitCommands = (
           next.map(filePath => path.join(deps.workspaceRoot, filePath)),
           { bulk: true }
         );
+
+        const checked = new Set(
+          deps.fileSelection
+            .getCheckedFiles()
+            .map(filePath =>
+              path
+                .relative(deps.workspaceRoot, filePath)
+                .split(path.sep)
+                .join('/')
+            )
+        );
+
+        for (const name of reposWithoutIncludableFiles(perRepo, checked)) {
+          await vscode.window.showInformationMessage(
+            vscode.l10n.t(noChangesToIncludeMessage(), name)
+          );
+        }
 
         deps.publishChanges(
           modePick.id === 'add'

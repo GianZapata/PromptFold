@@ -182,6 +182,8 @@ export const gitUnavailableMessage = () =>
 export const noRepositoriesMessage = () =>
   'No Git repositories in this workspace.';
 
+export const noChangesToIncludeMessage = () => 'No changes to include in {0}.';
+
 export const repositoriesForTarget = (
   repos: DiscoveredRepository[],
   wanted: string | undefined

@@ -74,6 +74,8 @@
   "Do not ask again in this workspace": "No volver a preguntar en este workspace",
   "This preview is about {0} tokens, over the budget of {1}.": "Esta vista previa pesa unos {0} tokens, sobre el presupuesto de {1}.",
   "generated \u00b7 left out of bulk selection": "generado · fuera de la selección masiva",
+  "generated · included manually": "generado · incluido manualmente",
+  "No changes to include in {0}.": "No hay cambios para incluir en {0}.",
   "No files selected.": "No hay archivos seleccionados.",
   "Copying prompt": "Copiando el prompt",
   "A copy is already in progress.": "Ya hay una copia en curso.",

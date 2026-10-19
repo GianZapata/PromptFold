@@ -131,9 +131,7 @@ suite('Promptfold with two git repositories', () => {
       },
       () =>
         vscode.commands.executeCommand('promptfold.selectChanges', {
-          resourceUri: vscode.Uri.file(
-            path.join(workspaceRoot(), 'readme.txt')
-          )
+          resourceUri: vscode.Uri.file(path.join(workspaceRoot(), 'readme.txt'))
         })
     );
 

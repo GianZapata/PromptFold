@@ -7,7 +7,8 @@ import {
   changesForScope,
   gitScopeMenu,
   mergeChanges,
-  pathsToCheck
+  pathsToCheck,
+  reposWithoutIncludableFiles
 } from '../src/domain/services/git-changes.service';
 
 test('git scopes keep current and staged ahead of the advanced pair', () => {
@@ -20,6 +21,23 @@ test('git scopes keep current and staged ahead of the advanced pair', () => {
   );
   assert.equal(menu[2]?.kind, 'separator');
   assert.equal(menu[2]?.labelKey, 'Advanced');
+});
+
+test('a Git selection with no includable files names the repository', () => {
+  assert.deepEqual(
+    reposWithoutIncludableFiles(
+      [
+        { name: 'api', wanted: ['api/package-lock.json'] },
+        { name: 'web', wanted: ['web/src/app.ts'] }
+      ],
+      new Set(['web/src/app.ts'])
+    ),
+    ['api']
+  );
+  assert.deepEqual(
+    reposWithoutIncludableFiles([{ name: 'api', wanted: [] }], new Set()),
+    ['api']
+  );
 });
 
 test('adding changes merges by repository and path', () => {

@@ -16,5 +16,6 @@ export const generatedPatterns = [
   'packages.lock.json',
   '*.min.js',
   '*.min.css',
-  '*.map'
+  '*.map',
+  '*.tsbuildinfo'
 ];
