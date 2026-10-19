@@ -45,8 +45,7 @@ const readerFor = (dir: string): DiffReader => ({
   },
   getMergeBase: async () => undefined,
   diffWith: async (ref, filePath) => git(dir, ['diff', ref, '--', filePath]),
-  readFile: async filePath =>
-    fs.readFileSync(path.join(dir, filePath), 'utf8')
+  readFile: async filePath => fs.readFileSync(path.join(dir, filePath), 'utf8')
 });
 
 const promptFor = async (dir: string, groups: GitStatusGroups) => {
