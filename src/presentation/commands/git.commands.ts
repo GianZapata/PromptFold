@@ -22,7 +22,8 @@ import {
 } from '../../domain/services/git-changes.service';
 import {
   gitUnavailableMessage,
-  noRepositoriesMessage
+  noRepositoriesMessage,
+  repositoriesForTarget
 } from '../../domain/services/git-repos.service';
 
 export interface GitFileSelectionPort {
@@ -169,8 +170,10 @@ export const registerGitCommands = (
 
         const scripted = presetScope !== undefined;
         const wanted = wantedRepository(deps.workspaceRoot, target);
-
-        const repos = await deps.discoverRepositories.execute(wanted);
+        const repos = repositoriesForTarget(
+          await deps.discoverRepositories.execute(),
+          wanted
+        );
 
         if (repos.length === 0) {
           await vscode.window.showInformationMessage(

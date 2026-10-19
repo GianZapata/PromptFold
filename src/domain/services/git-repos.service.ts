@@ -182,6 +182,19 @@ export const gitUnavailableMessage = () =>
 export const noRepositoriesMessage = () =>
   'No Git repositories in this workspace.';
 
+export const repositoriesForTarget = (
+  repos: DiscoveredRepository[],
+  wanted: string | undefined
+) => {
+  if (wanted === undefined) return repos;
+
+  const rooted = repos.filter(repo => repo.relativePath === wanted);
+
+  if (rooted.length === 0) return repos;
+
+  return rooted;
+};
+
 const relativeToWorkspace = (
   workspaceRoot: string,
   rootPath: string,

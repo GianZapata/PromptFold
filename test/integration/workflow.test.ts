@@ -116,6 +116,31 @@ suite('Promptfold with two git repositories', () => {
 
   setup(selectUncommitted);
 
+  test('a file at the fixture root still offers the workspace repositories', async () => {
+    const offered: string[] = [];
+
+    await withStubs(
+      {
+        pickFor: (placeHolder, items) => {
+          if (placeHolder === 'Choose repositories') {
+            offered.push(...items.map(item => item.label));
+          }
+
+          return undefined;
+        }
+      },
+      () =>
+        vscode.commands.executeCommand('promptfold.selectChanges', {
+          resourceUri: vscode.Uri.file(
+            path.join(workspaceRoot(), 'readme.txt')
+          )
+        })
+    );
+
+    assert.ok(offered.includes('api'));
+    assert.ok(offered.includes('web'));
+  });
+
   test('activates the extension from the development folder', () => {
     const extension = vscode.extensions.getExtension(EXTENSION_ID);
 

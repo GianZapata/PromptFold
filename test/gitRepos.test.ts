@@ -4,6 +4,7 @@ import path from 'path';
 
 import {
   discoverRepositories,
+  repositoriesForTarget,
   repositoryLabel
 } from '../src/domain/services/git-repos.service';
 
@@ -55,4 +56,24 @@ test('discovery keeps repositories and submodules, and skips an excluded worktre
   assert.equal(repositoryLabel(found[0]).args[0], 'feature/example');
   assert.equal(repositoryLabel(found[1]).message, 'submodule · {0}');
   assert.equal(repositoryLabel(found[1]).args[0], 'abcdef1');
+});
+
+test('a file outside every repository does not hide the workspace repositories', () => {
+  const repos = [
+    { relativePath: 'api', kind: 'repository' as const, branch: 'main' },
+    { relativePath: 'web', kind: 'repository' as const, branch: 'main' }
+  ];
+
+  assert.deepEqual(
+    repositoriesForTarget(repos, 'readme.txt').map(repo => repo.relativePath),
+    ['api', 'web']
+  );
+  assert.deepEqual(
+    repositoriesForTarget(repos, 'api').map(repo => repo.relativePath),
+    ['api']
+  );
+  assert.deepEqual(
+    repositoriesForTarget(repos, undefined).map(repo => repo.relativePath),
+    ['api', 'web']
+  );
 });
