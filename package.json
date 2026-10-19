@@ -44,7 +44,7 @@
     }
   },
   "engines": {
-    "vscode": "^1.125.0"
+    "vscode": "^1.107.0"
   },
   "extensionKind": [
     "workspace"
@@ -428,13 +428,21 @@
         },
         "promptfold.outputFormat": {
           "type": "string",
-          "enum": ["xml", "markdown", "plain"],
+          "enum": [
+            "xml",
+            "markdown",
+            "plain"
+          ],
           "default": "xml",
           "description": "%promptfold.outputFormat.description%"
         },
         "promptfold.diffMode": {
           "type": "string",
-          "enum": ["diffAndFiles", "diffOnly", "filesOnly"],
+          "enum": [
+            "diffAndFiles",
+            "diffOnly",
+            "filesOnly"
+          ],
           "default": "diffAndFiles",
           "description": "%promptfold.diffMode.description%"
         },
@@ -470,7 +478,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.19.1",
-    "@types/vscode": "1.125.0",
+    "@types/vscode": "1.107.0",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser": "^8.66.0",
     "@vscode/test-cli": "^0.0.15",
