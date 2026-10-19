@@ -312,17 +312,27 @@ export const fillChangeDiff = async (
 const withLf = (text: string | undefined) => text?.replace(/\r\n/g, '\n');
 
 const newFileDiff = (filePath: string, content: string) => {
-  const lines = content.length === 0 ? [] : content.split(LINE_BREAK);
-  const body = lines.map(line => `+${line}`).join('\n');
-
-  return [
+  const header = [
     `diff --git a/${filePath} b/${filePath}`,
     'new file mode 100644',
     '--- /dev/null',
-    `+++ b/${filePath}`,
-    `@@ -0,0 +1,${Math.max(lines.length, 1)} @@`,
-    body
-  ]
-    .filter(line => line.length > 0)
-    .join('\n');
+    `+++ b/${filePath}`
+  ];
+
+  const normalized = withLf(content) ?? '';
+
+  if (normalized.length === 0) return `${header.join('\n')}\n`;
+
+  const missingFinalNewline = !normalized.endsWith('\n');
+  const recorded = missingFinalNewline ? normalized : normalized.slice(0, -1);
+
+  const lines = recorded.split('\n');
+  const hunk = [
+    `@@ -0,0 +1,${lines.length} @@`,
+    ...lines.map(line => `+${line}`)
+  ];
+
+  if (missingFinalNewline) hunk.push('\\ No newline at end of file');
+
+  return `${[...header, ...hunk].join('\n')}\n`;
 };
