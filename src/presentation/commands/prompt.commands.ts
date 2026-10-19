@@ -190,6 +190,8 @@ const resolveReportKind = (
 export const registerPromptCommands = (
   deps: PromptCommandDeps
 ): vscode.Disposable[] => {
+  let previewVersion = 0;
+
   const openReport = async (report: string) => {
     deps.detailsSource.set(report);
     deps.detailsEmitter.fire(deps.detailsUri);
@@ -652,7 +654,11 @@ export const registerPromptCommands = (
         format
       });
 
-      const previewUri = vscode.Uri.parse(deps.previewSource.uriFor(format));
+      const previewUri = vscode.Uri.parse(deps.previewSource.uriFor(format)).with(
+        {
+          query: `v=${++previewVersion}`
+        }
+      );
 
       deps.previewSource.set(previewUri.toString(), summary.output);
       deps.previewEmitter.fire(previewUri);

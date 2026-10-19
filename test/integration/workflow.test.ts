@@ -141,6 +141,42 @@ suite('Promptfold with two git repositories', () => {
     assert.ok(offered.includes('web'));
   });
 
+  test('a second preview in the same format shows the new selection', async () => {
+    await vscode.commands.executeCommand('promptfold.clearChecks');
+    await vscode.commands.executeCommand('promptfold.clearGitChanges');
+    await withStubs({}, () =>
+      vscode.commands.executeCommand(
+        'promptfold.selectChanges',
+        undefined,
+        'uncommitted'
+      )
+    );
+    await withStubs({}, () =>
+      vscode.commands.executeCommand('promptfold.previewPrompt')
+    );
+
+    const first = vscode.window.activeTextEditor?.document.getText() ?? '';
+
+    await vscode.commands.executeCommand('promptfold.clearChecks');
+    await vscode.commands.executeCommand('promptfold.clearGitChanges');
+    await withStubs({}, () =>
+      vscode.commands.executeCommand(
+        'promptfold.selectChanges',
+        undefined,
+        'staged'
+      )
+    );
+    await withStubs({}, () =>
+      vscode.commands.executeCommand('promptfold.previewPrompt')
+    );
+
+    const second = vscode.window.activeTextEditor?.document.getText() ?? '';
+
+    assert.equal(first.includes('Revisar el diseño'), true);
+    assert.equal(second.includes('Revisar el diseño'), false);
+    assert.notEqual(second, first);
+  });
+
   test('activates the extension from the development folder', () => {
     const extension = vscode.extensions.getExtension(EXTENSION_ID);
 
