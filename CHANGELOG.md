@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - Unreleased
+
+### Fixed
+
+- Git changes from the toolbar no longer says there are no repositories when the focused file is outside one. (#1)
+- Previewing again in the same format shows the prompt for the current selection. (#2)
+- The copy notice counts omitted folders from the current selection, not an earlier one. (#3)
+- Changing the output format no longer writes it into the workspace settings. (#4)
+- The size warning no longer shows two Cancel buttons on macOS. (#5)
+- A generated file you check yourself is marked as included, `*.tsbuildinfo` stays out of bulk selection, and an empty Git selection says which repository had nothing to include. (#6)
+
 ## [1.0.0] - 2026-10-19
 
 Initial release of Promptfold, based on Files2Prompt 1.8.0 by Thomas McKanna (MIT).
@@ -23,4 +34,5 @@ Initial release of Promptfold, based on Files2Prompt 1.8.0 by Thomas McKanna (MI
 - Sensitive files such as credentials and keys are never included, in files or in diffs.
 - Links that point outside the workspace are skipped.
 
+[1.0.1]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.1
 [1.0.0]: https://github.com/GianZapata/PromptFold/releases/tag/v1.0.0
