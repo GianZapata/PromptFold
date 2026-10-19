@@ -55,9 +55,32 @@ jobs:
           path: promptfold.vsix
           if-no-files-found: error
 
+  smoke:
+    name: Smoke the packaged VSIX (${{ matrix.vscode }})
+    needs: verify
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        vscode: [stable, minimum]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Install Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm ci
+      - name: Download VSIX
+        uses: actions/download-artifact@v7
+        with:
+          name: promptfold-vsix
+      - name: Smoke test
+        run: xvfb-run -a npm run test:smoke -- promptfold.vsix ${{ matrix.vscode }}
+
   publish:
     name: Publish the packaged VSIX
-    needs: verify
+    needs: [verify, smoke]
     runs-on: ubuntu-latest
     permissions:
       contents: write
