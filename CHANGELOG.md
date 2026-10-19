@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - Unreleased
+
+### Fixed
+
+- Installs on editors based on VS Code 1.107, such as Antigravity.
+- New files are included when `git.untrackedChanges` is `separate`, and conflicted files are included as modified.
+
+### Added
+
+- Publishing to Open VSX.
+
 ## [1.0.1] - 2026-10-19
 
 ### Fixed

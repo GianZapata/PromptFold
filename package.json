@@ -3,7 +3,7 @@
   "displayName": "Promptfold",
   "icon": "./promptfold-icon.png",
   "description": "Pack files, Git diffs and project structure into token-aware prompts for LLMs.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "gianzapata",
   "keywords": [
     "files",
