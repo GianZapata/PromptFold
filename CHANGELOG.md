@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-10-19
 
 Initial release of Promptfold, based on Files2Prompt 1.8.0 by Thomas McKanna (MIT).
 
@@ -17,7 +17,6 @@ Initial release of Promptfold, based on Files2Prompt 1.8.0 by Thomas McKanna (MI
 - A tree of the selected files at the top of the prompt (`promptfold.includeTree`).
 - Optional whitespace compaction for file contents (`promptfold.compactWhitespace`).
 - Protection for secrets: a sensitive level that never reaches the prompt, with `promptfold.allowSensitive` as the explicit exception.
-- CI on Linux, macOS and Windows.
 
 ### Security
 
